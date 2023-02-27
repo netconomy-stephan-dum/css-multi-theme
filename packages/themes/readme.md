@@ -1,0 +1,2 @@
+- each theme can have global variables
+- each theme needs to implement the correct interface

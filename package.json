@@ -1,0 +1,19 @@
+{
+  "name": "css-themes",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "license": "MIT",
+  "packageManager": "yarn@3.2.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "yarn workspace @micro/app dev",
+    "debug": "yarn workspace @micro/app debug",
+    "sass-theme": "yarn workspace @micro/webpack sass-theme",
+    "sass-theme-debug": "yarn workspace @micro/webpack sass-theme-debug",
+    "serve": "yarn workspace @micro/app http-server ./dist",
+    "start": "yarn dev && yarn sass-theme && yarn serve"
+  }
+}

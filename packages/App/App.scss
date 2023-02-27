@@ -1,0 +1,7 @@
+/* load global (p)reset and variables*/
+.section {
+  background-color: blue;
+}
+.section > .sub {
+  border: 1px solid purple;
+}

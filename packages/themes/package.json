@@ -1,0 +1,8 @@
+{
+  "name": "@micro/themes",
+  "version": "1.0.0",
+  "workspaces": [
+    "light",
+    "dark"
+  ]
+}
