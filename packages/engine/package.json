@@ -1,7 +1,0 @@
-{
-  "name": "@micro/engine",
-  "version": "1.0.0",
-  "dependencies": {
-    "@micro/utils": "1.0.0"
-  }
-}
