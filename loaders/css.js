@@ -26,10 +26,9 @@ const getOverloadFile = async ({ tenantDirs, appDir }, resourcePath) => {
   }
   return null;
 };
-
 const cssLoader = async function (source) {
   const options = this.getOptions();
-  const { appDir, tenants } = options;
+  const { appDir, tenants, count } = options;
   const json = source.replace(/^\/\/ Exports\n/, '').replace('export default ', '').replace(/;(\n)?$/, '');
   const filePath = path
     .relative(appDir, this.resourcePath)
@@ -46,7 +45,7 @@ const cssLoader = async function (source) {
           return reject(error);
         }
 
-        this.emitFile(path.join(tenantName, targetFile), source.toString());
+        this.emitFile(`${tenantName}/${count}/${targetFile}`, source.toString());
 
         resolve();
       });

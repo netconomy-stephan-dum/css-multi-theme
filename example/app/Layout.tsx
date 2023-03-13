@@ -2,6 +2,7 @@ import React, { FunctionComponent, ReactElement } from 'react';
 import Icon from "@example/components/Icon";
 import logo from './logo.svg';
 import './variables.scss';
+import overloadStyle from './overloaderStyle.scss';
 import styles from './Layout.scss';
 
 const naviData = [
@@ -24,7 +25,7 @@ interface LayoutProps {
 const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
   return (
     <>
-      <header className={styles.header}>
+      <header className={styles.header+ ' '+ overloadStyle.header}>
         <nav>
           <ul>
             <li className={styles.logo}>
