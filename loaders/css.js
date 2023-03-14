@@ -1,58 +1,42 @@
-const path = require('node:path');
-const fs = require('node:fs/promises');
+const postcss = require('postcss');
+const localByDefault = require("postcss-modules-local-by-default");
+const modulesScope = require("postcss-modules-scope");
 
-const getShortPath = (filePath) => {
-  const [base, ext] = path.basename(filePath).split('.');
-  return filePath
-    .replace(`${base}${path.sep}${base}.${ext}`, base+'.'+ext)
-    .replace(/^\.\./, '@micro');
-}
+const postcssExport = require('../utils/postcssExport');
+const overload = require('../utils/overload');
 
-const exists = (filePath) => fs.access(filePath).then(() => true, () => false);
-
-const getOverloadFile = async ({ tenantDirs, appDir }, resourcePath) => {
-  for (let i = 0; i < tenantDirs.length; i++) {
-    const tenantPath = path.join(tenantDirs[i], resourcePath);
-
-    if (await exists(tenantPath)) {
-      return tenantPath;
-    }
-    const [baseName, ext] = path.basename(tenantPath).split('.');
-
-    const longPath = path.join(path.dirname(tenantPath), baseName, baseName+'.'+ext);
-    if (await exists(longPath)) {
-      return longPath;
-    }
-  }
-  return null;
-};
-const cssLoader = async function (source) {
+const cssLoader = function (rawSource) {
+  const callback = this.async();
   const options = this.getOptions();
-  const { appDir, tenants, count } = options;
-  const json = source.replace(/^\/\/ Exports\n/, '').replace('export default ', '').replace(/;(\n)?$/, '');
-  const filePath = path
-    .relative(appDir, this.resourcePath)
-    .replace(/\\/g, '/');
+  const { count } = this.data;
+  const { appDir, tenants } = options;
 
-  const targetFile = filePath.replace(/^\.\.\//, '');
-  const shortPath = getShortPath(filePath);
-  const classNames = encodeURIComponent(JSON.stringify(json));
-  await Promise.all(tenants.map(({ tenantDirs, tenantName }) => getOverloadFile({ tenantDirs, appDir }, shortPath)
-    .then((overloadPath) => new Promise((resolve, reject) => {
-      const search = new URLSearchParams({ classNames, tenant: tenantName });
-      this.loadModule((overloadPath || this.resourcePath)+`?${search.toString()}`, (error, source) => {
-        if (error) {
-          return reject(error);
-        }
+  const moduleMap = {};
 
-        this.emitFile(`${tenantName}/${count}/${targetFile}`, source.toString());
+  postcss([
+    localByDefault(),
+    modulesScope(),
+    postcssExport(moduleMap)
+  ]).process(rawSource.toString(), { from: this.resourcePath }).then(({ messages }) => {
+    if (messages.length) {
+      console.log(...messages);
+    }
+    const classNames = encodeURIComponent(JSON.stringify(moduleMap));
+    const search = (tenantName) => `?${new URLSearchParams({classNames, tenant: tenantName}).toString()}`;
 
-        resolve();
-      });
-    }))
-  ));
-
-  return source;
+    return overload(this, options, (tenantName, targetFile, source) => {
+      this.emitFile(`${tenantName}/${count}/${targetFile}`, source);
+    }, search).then(() => {
+      callback(null, [
+        `const moduleMap = ${JSON.stringify(moduleMap)};`,
+        `export default moduleMap;`
+      ].join('\n'))
+    }, callback);
+  });
 };
 
+let counter = 0;
+cssLoader.pitch = function (remainingRequest, precedingRequest, data) {
+  data.count = counter++;
+};
 module.exports = cssLoader;

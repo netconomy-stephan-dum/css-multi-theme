@@ -2,8 +2,8 @@ import React, { FunctionComponent, ReactElement } from 'react';
 import Icon from "@example/components/Icon";
 import logo from './logo.svg';
 import './variables.scss';
-import overloadStyle from './overloaderStyle.scss';
 import styles from './Layout.scss';
+import overloadStyle from './overloaderStyle.scss';
 
 const naviData = [
   {

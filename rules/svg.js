@@ -1,10 +1,8 @@
 const getSVGRules = (options, use) => [
-  {
-    issuerLayer: 'svg-collect',
-    test: /svg$/,
-    type: "asset",
-    use
-  },
+  // svg imported by javascript from app logic
+  // emit separate svg file for each tenant
+  // insert symbol #id and viewport
+  // sprite_name handled in plugin
   {
     issuer: /\.[jt]sx?$/,
     layer: 'svg-collect',
@@ -16,6 +14,14 @@ const getSVGRules = (options, use) => [
         options,
       },
     ],
+  },
+  // parse all svg symbols for each tenant
+  // output is concatenated to chunk sprite
+  {
+    issuerLayer: 'svg-collect',
+    test: /svg$/,
+    type: "asset",
+    use
   },
 ]
 

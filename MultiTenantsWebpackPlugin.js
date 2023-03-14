@@ -1,3 +1,4 @@
+const {Compilation} = require('webpack');
 const { RawSource } = require('webpack-sources');
 
 const getCSSRules = require('./rules/css');
@@ -26,42 +27,47 @@ class MultiTenantsWebpackPlugin {
     ];
   }
   apply(compiler) {
-    compiler.hooks.emit.tapAsync(
+    compiler.hooks.thisCompilation.tap(
       pluginName,
-      async (compilation, callback) => {
-        const stats = compilation.getStats().toJson();
-        const { assetsByChunkName, chunks } = stats;
+      (compilation) => {
+        compilation.hooks.processAssets.tapPromise(
+          {
+            name: pluginName,
+            stage: Compilation.PROCESS_ASSETS_STAGE_DERIVED
+          },
+          () => {
+            const { chunks, assets } = compilation;
 
-        chunks.forEach(({ id, files }) => {
-          files.forEach((chunkFile) => {
-            compilation.assets[chunkFile] = new RawSource(
-              compilation.assets[chunkFile].source().replace(/__sprite_name__/g, `\\"${id}\\"`)
-            );
-          });
-        })
+            chunks.forEach(({ id, files }) => {
+              files.forEach((chunkFile) => {
+                assets[chunkFile] = new RawSource(
+                  assets[chunkFile].source().replace(/__sprite_name__/g, `\\"${id}\\"`)
+                );
+              });
+            })
 
-        await Promise.all(this.tenants.map(({ tenantName }) => {
-          const assetsByTenantChunkName = {};
-          return Promise.all(chunks.map((chunk) => {
-            const { id, auxiliaryFiles, files } = chunk;
-            const assets = assetsByChunkName[id]?.slice() || [];
-            assetsByTenantChunkName[id] = assets;
+            return Promise.all(this.tenants.map(({ tenantName }) => {
+              const assetsByTenantChunkName = {};
+              return Promise.all(Array.from(chunks).map((chunk) => {
+                const { id, auxiliaryFiles } = chunk;
+                const assets = [];
+                assetsByTenantChunkName[id] = assets;
 
-            return Promise.all([
-              createChunk(compilation, auxiliaryFiles, tenantName, id, assets, 'scss', createCSSChunk, 'css'),
-              createChunk(compilation, auxiliaryFiles, tenantName, id, assets, 'svg', createSVGChunk),
-            ]);
-          })).then(() => {
-            compilation.assets[`assets/${tenantName}/assetsByChunkName.js`] = new RawSource([
-              `const assetsByChunkName = ${JSON.stringify(assetsByTenantChunkName)};`,
-              `export default assetsByChunkName;`,
-            ].join('\n'));
-          });
-        }));
-
-        callback();
+                return Promise.all([
+                  createChunk(compilation, auxiliaryFiles, tenantName, id, assets, 'scss', createCSSChunk, 'css'),
+                  createChunk(compilation, auxiliaryFiles, tenantName, id, assets, 'svg', createSVGChunk),
+                ]);
+              })).then(() => {
+                assets[`assets/${tenantName}/assetsByChunkName.js`] = new RawSource([
+                  `const assetsByChunkName = ${JSON.stringify(assetsByTenantChunkName)};`,
+                  `export default assetsByChunkName;`,
+                ].join('\n'));
+              });
+            })).then(() => {});
+          }
+        )
       }
-    );
+    )
   }
 }
 
