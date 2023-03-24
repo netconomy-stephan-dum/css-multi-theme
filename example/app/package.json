@@ -31,6 +31,6 @@
   },
   "scripts": {
     "debug": "node --inspect-brk $(yarn bin webpack-cli) --mode development",
-    "dev": "webpack-cli --mode development"
+    "dev": "webpack-cli --mode development --config webpack.config.js"
   }
 }

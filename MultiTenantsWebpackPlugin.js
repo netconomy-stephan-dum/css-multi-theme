@@ -10,9 +10,9 @@ const createChunk = require('./utils/createChunk');
 const pluginName = 'MultiTenantsWebpackPlugin';
 
 class MultiTenantsWebpackPlugin {
-  constructor(tenants, appDir) {
+  constructor(tenants, appDir, appRoot) {
     this.tenants = tenants;
-    this.options = { tenants, appDir };
+    this.options = { tenants, appDir, appRoot };
   }
   getCSSRules(use) {
     return getCSSRules(this.options, use);

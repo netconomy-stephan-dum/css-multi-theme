@@ -1,4 +1,11 @@
+const svgToMiniDataURI = require('mini-svg-data-uri');
 const createPostCSSOptions = require('../utils/createPostCSSOptions');
+
+const inlineOptions = {
+  dataUrlCondition: {
+    maxSize: 4 * 1024 // 4kb
+  }
+};
 const getCSSRules = (options, use) => [
   // scss imported by javascript from app logic
   // only keep css module interface
@@ -37,10 +44,20 @@ const getCSSRules = (options, use) => [
   // otherwise a file will be emitted and the according url will be returned instead (similar to asset module)
   {
     issuerLayer: 'collect-css',
-    test: /(svg|tff|woff|woff2|otf|jpe?g|gif|png)$/,
+    test: /(tff|woff|woff2|otf|jpe?g|gif|png)$/,
     type: "asset",
-    loader: require.resolve('../loaders/inline'),
+    parser: inlineOptions,
+    // loader: require.resolve('../loaders/inline'),
   },
+  {
+    issuerLayer: 'collect-css',
+    test: /\.svg$/,
+    type: 'asset',
+    parser: inlineOptions,
+    generator: {
+      dataUrl: content => svgToMiniDataURI(content.toString())
+    }
+  }
 ]
 
 module.exports = getCSSRules;

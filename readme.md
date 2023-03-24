@@ -64,6 +64,7 @@ go to one of the addresses added to host file with approriate PORT (default is 8
 add eslint & stylelint
 add static dir overload to plugin
 rework options
+hmr for scss
 - split css in pre and post step
 - css post css plugins as options
 - add inline loader maxFileSize as option

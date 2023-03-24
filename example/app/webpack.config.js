@@ -26,7 +26,7 @@ const darkTenant = {
 
 const tenants = [darkTenant, lightTenant, baseTenant];
 
-const multiTenantsWebpackPlugin = new MultiTenantsWebpackPlugin(tenants, __dirname);
+const multiTenantsWebpackPlugin = new MultiTenantsWebpackPlugin(tenants, __dirname, path.dirname(__dirname));
 
 const svgPipeline = [
   {

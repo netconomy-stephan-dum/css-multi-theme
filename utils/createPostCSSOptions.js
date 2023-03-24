@@ -5,7 +5,6 @@ const modulesScope = require("postcss-modules-scope");
 const postcssURL = require('postcss-url');
 
 const postcssExport = require('./postcssExport');
-const loadModule = require('./promisedLoadModule');
 
 const createPostCSSOptions = (options) => (context) => {
   const search = new URLSearchParams(context.resourceQuery);
@@ -40,7 +39,14 @@ const createPostCSSOptions = (options) => (context) => {
         url: (asset) =>
           resolve(options.appDir, relativeReducePath+'/'+asset.url)
             .catch((error) => path.join(path.dirname(context.resourcePath), asset.url))
-            .then((overloadPath) => loadModule(context, overloadPath+`?tenant=${tenantName}`))
+            .then((overloadPath) => new Promise((resolve, reject) => {
+              context.loadModule( overloadPath+`?tenant=${tenantName}`, (error, source) => {
+                if (error) {
+                  return reject(error);
+                }
+                return resolve(source.toString());
+              })
+            }))
       }),
     ],
   })

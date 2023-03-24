@@ -24,13 +24,14 @@ function addXmlns(code) {
   }
 }
 
-const createDataURI = (data, mimeType, encoding) => `"data:image/${mimeType};charset=${encoding},${data}`
+const createDataURI = (data, mimeType, charset) => `"data:image/${mimeType};charset=${charset},${data}"`
 
 const fontExts = ['woff', 'woff2', 'otf', 'ttf'];
 const videoExts = ['mp4', 'webm', 'ogg', 'mpe?g', 'avi', 'flv'];
 const alwaysExternalExts = [...fontExts, ...videoExts];
 const inlineLoader = function (rawSource) {
   const source = rawSource.toString();
+  // TODO: use this.query instead
   const tenantName = new URLSearchParams(this.resourceQuery).get('tenant');
   const ext = path.extname(this.resourcePath).slice(1);
 

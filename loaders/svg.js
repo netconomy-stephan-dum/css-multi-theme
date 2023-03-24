@@ -3,8 +3,8 @@ const overload = require('../utils/overload');
 
 const SVGLoader = function (source) {
   const callback = this.async();
-  const { appDir = process.cwd(), tenants = [] } = this.getOptions();
-  return overload(this, { appDir, tenants }, (tenantName, targetFile, rawSource) => {
+  const options = this.getOptions();
+  return overload(this, options, (tenantName, targetFile, rawSource) => {
     this.emitFile(path.join(tenantName, targetFile), rawSource);
   }).then(() => {
     const viewportMatch = /viewBox="(.*?)"/i.exec(source);
