@@ -1,7 +1,7 @@
 import { ComponentPropsWithRef, ComponentType, FunctionComponent, lazy } from "react";
 import { ImportHandler } from "../createBrowserEngine";
 
-const loadable = <T extends ComponentType<any>>(importHandler: ImportHandler<T>, chunkName: string): FunctionComponent<ComponentPropsWithRef<T>> => {
+const loadable = <T extends ComponentType<object>>(importHandler: ImportHandler<T>, chunkName: string): FunctionComponent<ComponentPropsWithRef<T>> => {
   const patchedHandler = () => {
     const { assetsByChunkName, assetHandler, tenantName } = window;
 

@@ -1,6 +1,7 @@
 {
   "name": "@example/routes",
   "version": "1.0.0",
+  "private": true,
   "dependencies": {
     "@example/engine-browser": "1.0.0"
   }

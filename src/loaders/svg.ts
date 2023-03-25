@@ -1,17 +1,22 @@
-const path = require("node:path");
-const overload = require('../utils/overload');
+import path from "node:path";
+import {LoaderDefinition} from "webpack";
 
-const SVGLoader = function (source) {
+import {TenantOptions} from "../types";
+import overload, {EachCallback} from "../utils/overload";
+
+const SVGLoader: LoaderDefinition<TenantOptions> = function (source) {
   const callback = this.async();
   const options = this.getOptions();
-  return overload(this, options, (tenantName, targetFile, rawSource) => {
+  const each: EachCallback = (tenantName, targetFile, rawSource) => {
     this.emitFile(path.join(tenantName, targetFile), rawSource);
-  }).then(() => {
+  };
+
+  overload(this, options, each).then(() => {
     const viewportMatch = /viewBox="(.*?)"/i.exec(source);
     if (!viewportMatch || viewportMatch.length < 2) {
       throw new Error(`viewport not set for icon file ${this.resourcePath}!`);
     }
-    const viewport = viewportMatch[1];
+    const [viewport] = viewportMatch;
     const iconName = path.basename(this.resourcePath, '.svg');
     const helperPath = require.resolve('../utils/spriteStringToObject').replace(/\\\\?/g, '/');
     callback(null, [
