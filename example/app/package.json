@@ -16,21 +16,23 @@
     "webpack-cli": "^4.9.2"
   },
   "devDependencies": {
+    "@dev/eslint": "1.0.0",
     "@example/engine-browser": "1.0.0",
+    "@multi-tenants/webpack-plugin": "1.0.0",
     "@swc/core": "1.3.36",
     "@types/react": "^18.0.9",
     "@types/react-dom": "^18.0.3",
     "@types/webpack": "5.28.0",
     "html-webpack-plugin": "^5.5.0",
     "http-server": "^14.1.1",
-    "multi-tenants-webpack-plugin": "1.0.0",
     "sass-loader": "^13.2.0",
     "svgo-loader": "^4.0.0",
     "swc-loader": "0.2.3",
     "webpack": "^5.75.0"
   },
   "scripts": {
+    "lint": "yarn eslint .",
     "debug": "node --inspect-brk $(yarn bin webpack-cli) --mode development",
-    "dev": "webpack-cli --mode development --config webpack.config.js"
+    "dev": "webpack-cli --mode development --config webpack.config.cjs"
   }
 }

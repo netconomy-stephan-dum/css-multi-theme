@@ -1,4 +1,4 @@
-import {TenantOptions, UseOption} from "../types";
+import { TenantOptions, UseOption } from '../types';
 
 const getSVGRules = (options: TenantOptions, use: UseOption) => [
   /*
@@ -26,9 +26,9 @@ const getSVGRules = (options: TenantOptions, use: UseOption) => [
   {
     issuerLayer: 'svg-collect',
     test: /svg$/,
-    type: "asset",
-    use
+    type: 'asset',
+    use,
   },
-]
+];
 
 export default getSVGRules;

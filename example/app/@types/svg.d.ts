@@ -1,4 +1,4 @@
-declare module "*.svg" {
+declare module '*.svg' {
   interface Glyph {
     viewBox: string;
     width: string;

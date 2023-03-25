@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "bin": "./bin.cjs",
+  "scripts": {
+    "lint": "node ./bin.cjs ."
+  },
   "dependencies": {
     "@eslint/eslintrc": "^2.0.1",
     "@eslint/js": "^8.36.0",

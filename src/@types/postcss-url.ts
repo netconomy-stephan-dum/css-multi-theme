@@ -49,10 +49,7 @@ declare module 'postcss-url' {
      */
     file?: string | undefined;
   }
-  type CustomTransformFunction = (
-    asset: Asset,
-    dir: Dir,
-  ) => string | Promise<string>;
+  type CustomTransformFunction = (asset: Asset, dir: Dir) => string | Promise<string>;
   type CustomHashFunction = (file: Buffer) => string;
   type CustomFilterFunction = (file: string) => boolean;
 
@@ -73,64 +70,59 @@ declare module 'postcss-url' {
      * Do not warn when an SVG URL with a fragment is inlined.
      * PostCSS-URL does not support partial inlining.
      * The entire SVG file will be inlined.
-     * By default a warning will be issued when this occurs.
+     * By default, a warning will be issued when this occurs.
      *
      * @default false
      */
-    ignoreFragmentWarning?: boolean | undefined;
+    ignoreFragmentWarning?: boolean;
 
     /**
      * Reduce size of inlined svg (IE9+, Android 3+)
      *
      * @default false
      */
-    optimizeSvgEncode?: boolean | undefined;
+    optimizeSvgEncode?: boolean;
+    filter?: RegExp | CustomFilterFunction | string;
 
     /**
-     * Determine wether a file should be inlined.
-     */
-    filter?: RegExp | CustomFilterFunction | string | undefined;
-
-    /**
-     * Specifies whether the URL's fragment identifer value, if present, will be added to the inlined data URI.
+     * Specifies whether the URLs fragment identifier value, if present, will be added to the inlined data URI.
      *
      * @default false
      */
-    includeUriFragment?: boolean | undefined;
+    includeUriFragment?: boolean;
 
     /**
      * The fallback method to use if the maximum size is exceeded or the URL contains a hash.
      */
-    fallback?: CustomTransformFunction | undefined;
+    fallback?: CustomTransformFunction;
 
     /**
      * Specify the base path or list of base paths where to search images from.
      */
-    basePath?: string | string[] | undefined;
+    basePath?: string | string[];
 
     /**
      * The assets files will be copied in that destination.
      *
      * @default false
      */
-    assetsPath?: boolean | string | undefined;
+    assetsPath?: boolean | string;
 
     /**
      * Rename the path of the files by a hash name.
      *
      * @default false
      */
-    useHash?: boolean | undefined;
+    useHash?: boolean;
 
     /**
      * Hash options
      */
-    hashOptions?:
-      | {
+    hashOptions?: {
       /**
        * Hashing method or custom function.
        */
-      method?: 'xxhash32' | 'xxhash64' | CustomHashFunction | undefined;
+      method?: 'xxhash32' | 'xxhash64' | CustomHashFunction;
 
       /**
        * Shrink hast to certain length.
@@ -141,11 +133,9 @@ declare module 'postcss-url' {
        * Append the original filename in resulting filename.
        */
       append?: boolean | undefined;
-    }
-      | undefined;
+    };
   }
 
-  const plugin: PluginCreator<PostCSSURLOptions>
+  const plugin: PluginCreator<PostCSSURLOptions>;
   export default plugin;
 }
-

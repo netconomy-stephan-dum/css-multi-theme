@@ -1,19 +1,15 @@
-const { FlatCompat } = require("@eslint/eslintrc");
-const react = require("eslint-plugin-react");
-const ESImport = require("eslint-plugin-import");
-
-const compat = new FlatCompat();
+const reactRecommended = require('eslint-plugin-react/configs/recommended');
 
 const ReactLintConfig = [
-  ...compat.config(ESImport.configs.recommended),
-  ...compat.config(react.configs.recommended),
   {
+    files: ['**/*.jsx', '**/*.tsx'],
+    ...reactRecommended,
     settings: {
       react: {
-        version: "detect",
+        version: 'detect',
       },
-    }
-  }
+    },
+  },
 ];
 
 module.exports = ReactLintConfig;

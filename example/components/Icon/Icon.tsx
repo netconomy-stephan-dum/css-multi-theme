@@ -14,6 +14,7 @@ interface IconProps {
 
 const Icon: FunctionComponent<IconProps> = ({ glyph }) => {
   const { width, height, url } = glyph;
+  console.log(glyph);
   return (
     <svg width={width} height={height}><use xlinkHref={url}/></svg>
   )

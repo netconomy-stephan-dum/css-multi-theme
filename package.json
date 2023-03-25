@@ -1,5 +1,6 @@
 {
   "private": true,
+  "version": "1.0.0",
   "license": "MIT",
   "packageManager": "yarn@3.2.0",
   "workspaces": [
@@ -7,15 +8,12 @@
     "dev/*",
     "src"
   ],
-  "devDependencies": {
-    "@dev/eslint": "1.0.0"
-  },
   "scripts": {
     "dev": "yarn workspace @example/app dev",
-    "lint": "cross-env ESLINT_USE_FLAT_CONFIG=true yarn eslint src -c src/eslint.config.js",
+    "lint": "yarn workspaces foreach run lint",
     "debug": "yarn workspace @example/app debug",
     "serve": "yarn workspace @example/app http-server ./dist",
     "start": "yarn dev && yarn serve",
-    "build": "yarn tsc --project src --outDir dist"
+    "build-plugin": "yarn workspace @multi-tenants/webpack-plugin build"
   }
 }

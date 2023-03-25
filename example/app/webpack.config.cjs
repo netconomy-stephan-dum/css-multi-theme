@@ -1,27 +1,20 @@
 const path = require('node:path');
-const MultiTenantsWebpackPlugin = require("multi-tenants-webpack-plugin");
 const HTMLWebpackPlugin = require('html-webpack-plugin');
+const MultiTenantsWebpackPlugin = require('@multi-tenants/webpack-plugin').default;
 
 const baseTenant = {
-  tenantName: 'base',
-  assetDir: 'assets/base',
   tenantDirs: [],
+  tenantName: 'base',
 };
 
 const lightTenant = {
+  tenantDirs: [path.dirname(require.resolve('@example/tenant-light/package.json'))],
   tenantName: 'light',
-  assetDir: 'assets/light',
-  tenantDirs: [
-    path.dirname(require.resolve('@example/tenant-light/package.json'))
-  ],
 };
 
 const darkTenant = {
+  tenantDirs: [path.dirname(require.resolve('@example/tenant-dark/package.json'))],
   tenantName: 'dark',
-  assetDir: 'assets/dark',
-  tenantDirs: [
-    path.dirname(require.resolve('@example/tenant-dark/package.json'))
-  ]
 };
 
 const tenants = [darkTenant, lightTenant, baseTenant];
@@ -39,44 +32,40 @@ const svgPipeline = [
         'minifyStyles', // animations don't work with enabled minifyStyles
       ],
     },
-  }
+  },
 ];
-const scssPipeline = [
-  require.resolve('sass-loader'),
-];
+const scssPipeline = [require.resolve('sass-loader')];
 
 const config = {
-  entry: { browser: path.resolve("./browser.tsx")},
-  output: {
-    clean: true,
-  },
-  plugins: [
-    new HTMLWebpackPlugin({
-      title: '@example App',
-      template: path.resolve('./index.html'),
-      filename: 'index.html'
-    }),
-    multiTenantsWebpackPlugin,
-  ],
-  resolve: {
-    extensions: ['.ts', '.tsx', '...'],
-  },
+  entry: { browser: path.resolve('./browser.tsx') },
   experiments: {
     layers: true,
   },
   module: {
     rules: [
       ...multiTenantsWebpackPlugin.getAssetRules({
-        svg: svgPipeline,
         css: scssPipeline,
+        svg: svgPipeline,
       }),
       {
         test: /[jt]sx?$/,
-        use: [
-          require.resolve("swc-loader")
-        ],
+        use: [require.resolve('swc-loader')],
       },
     ],
+  },
+  output: {
+    clean: true,
+  },
+  plugins: [
+    new HTMLWebpackPlugin({
+      filename: 'index.html',
+      template: path.resolve('./index.html'),
+      title: '@example App',
+    }),
+    multiTenantsWebpackPlugin,
+  ],
+  resolve: {
+    extensions: ['.ts', '.tsx', '...'],
   },
 };
 

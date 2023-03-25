@@ -1,10 +1,10 @@
-import path from "node:path";
-import {LoaderDefinition} from "webpack";
+import path from 'node:path';
+import { LoaderDefinition } from 'webpack';
 
-import {TenantOptions} from "../types";
-import overload, {EachCallback} from "../utils/overload";
+import { TenantOptions } from '../types';
+import overload, { EachCallback } from '../utils/overload';
 
-const SVGLoader: LoaderDefinition<TenantOptions> = function (source) {
+const svgLoader: LoaderDefinition<TenantOptions> = function svgLoader(source) {
   const callback = this.async();
   const options = this.getOptions();
   const each: EachCallback = (tenantName, targetFile, rawSource) => {
@@ -12,20 +12,28 @@ const SVGLoader: LoaderDefinition<TenantOptions> = function (source) {
   };
 
   overload(this, options, each).then(() => {
-    const viewportMatch = /viewBox="(.*?)"/i.exec(source);
-    if (!viewportMatch || viewportMatch.length < 2) {
+    const viewBoxMatch = /viewBox="(.*?)"/i.exec(source);
+
+    if (!viewBoxMatch || viewBoxMatch.length < 2) {
       throw new Error(`viewport not set for icon file ${this.resourcePath}!`);
     }
-    const [viewport] = viewportMatch;
+    const [, viewBox] = viewBoxMatch;
     const iconName = path.basename(this.resourcePath, '.svg');
     const helperPath = require.resolve('../utils/spriteStringToObject').replace(/\\\\?/g, '/');
-    callback(null, [
-      `import spriteStringToObject from "${helperPath}";`,
-      // __sprite_name__ will be replaced by the plugin
-      `const icon = spriteStringToObject(__sprite_name__ + "#${iconName}?${viewport}");`,
-      `export default icon;`
-    ].join('\n'));
+
+    callback(
+      null,
+      [
+        `import spriteStringToObject from "${helperPath}";`,
+        // __sprite_name__ will be replaced by the plugin
+        `const icon = spriteStringToObject(__sprite_name__ + "#${iconName}?${viewBox.replace(
+          / /g,
+          ',',
+        )}");`,
+        `export default icon;`,
+      ].join('\n'),
+    );
   });
 };
 
-module.exports = SVGLoader;
+module.exports = svgLoader;

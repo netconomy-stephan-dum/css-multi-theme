@@ -4,9 +4,9 @@ interface ObjectNode {
   prop: string;
   value: string;
 }
-type PostcssExportOptions = Record<string, string>
+type PostcssExportOptions = Record<string, string>;
 const postcssExport: PluginCreator<PostcssExportOptions> = (moduleMap) => ({
-  Once (root) {
+  Once(root) {
     root.walkRules(':export', (rule) => {
       if (moduleMap) {
         rule.each((node) => {
@@ -16,7 +16,7 @@ const postcssExport: PluginCreator<PostcssExportOptions> = (moduleMap) => ({
       }
 
       rule.remove();
-    })
+    });
   },
   postcssPlugin: 'extract-export',
 });

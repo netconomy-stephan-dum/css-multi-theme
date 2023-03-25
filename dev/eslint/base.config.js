@@ -7,31 +7,33 @@ const cjsConfig = require('./cjs.config');
 const compat = new FlatCompat();
 const baseConfig = [
   js.configs.all,
-  ...compat.config(PrettierPlugin.configs.recommended),
-  ...compat.config(PrettierConfig),
+  {
+    ignores: ['**/node_modules/*', '**/dist/*', '**/.*'],
+  },
   {
     rules: {
       'capitalized-comments': 'off',
-      'func-names': 'off',
-      'import/namespace': 'off',
-      'import/no-extraneous-dependencies': 'off',
-      'init-declarations': 'off',
+      'line-comment-position': 'off',
       'max-params': 'off',
+      'multiline-comment-style': 'off',
+      'no-empty-function': 'off',
+      'no-inline-comments': 'off',
       'no-invalid-this': 'off',
+      'no-magic-numbers': 'off',
       'no-ternary': 'off',
+      'no-warning-comments': 'off',
       'one-var': 'off',
       'prefer-named-capture-group': 'off',
       'require-unicode-regexp': 'off',
       'sort-imports': 'off',
+      strict: 'off',
     },
   },
+  ...compat.config(PrettierPlugin.configs.recommended),
+  ...compat.config(PrettierConfig),
   {
-    files: ['**/eslint.config.js'],
+    files: ['**/eslint.config.js', '**/*.cjs'],
     ...cjsConfig,
-    rules: {
-      '@typescript-eslint/no-var-requires': 'off',
-      ...cjsConfig.rules,
-    },
   },
 ];
 

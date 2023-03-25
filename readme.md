@@ -16,16 +16,17 @@ First you need to define all tenants the build should include.
 All directories inside tenantDirs will be used from left to right to find a match overload.
 If no overload is found the original base version is used.
 ````js
+
+const MultiTenantsWebpackPlugin = require("multi-tenants-webpack-plugin");
+
 /* this is the app only with default styles applied */
 const baseTenant = {
   tenantName: 'base',
-  assetDir: 'assets/base',
   tenantDirs: [],
 };
 
 const lightTenant = {
   tenantName: 'light',
-  assetDir: 'assets/light',
   tenantDirs: [
     path.dirname(require.resolve('@example/tenant-light/package.json'))
   ],
@@ -33,19 +34,45 @@ const lightTenant = {
 
 const darkTenant = {
   tenantName: 'dark',
-  assetDir: 'assets/dark',
   tenantDirs: [
     path.dirname(require.resolve('@example/tenant-dark/package.json'))
   ]
 };
 
 const tenants = [darkTenant, lightTenant, baseTenant];
-````
 
+const multiTenantsPlugin = new MultiTenantsWebpackPlugin(__dirname, 'assets', tenants);
 
-````js
+const svgPipeline = [
+  {
+    loader: require.resolve('svgo-loader'),
+    options: {
+      plugins: [
+        'removeTitle', // keep for a11y
+        'removeDesc', // keep for a11y, but sketch uses it to expose itself
+        'removeXMLNS', // inline not necessary
+        'minifyStyles', // animations don't work with enabled minifyStyles
+      ],
+    },
+  },
+];
 
-const MultiTenantsWebpackPlugin = require("multi-tenants-webpack-plugin");
+const scssPipeline = [require.resolve('sass-loader')];
+
+const webpackConfig = {
+  experiments: {
+    layers: true,
+  },
+  module: {
+    rules: [
+      ...multiTenantsPlugin.getAssetRules({
+        css: scssPipeline,
+        svg: svgPipeline,
+      })
+    ],
+  },
+  plugins: [multiTenantsPlugin],
+};
 
 ````
 
@@ -76,6 +103,8 @@ go to one of the addresses added to host file with approriate PORT (default is 8
 ## v2
 - use a javascript parser as starting point to avoid loading the file and not using it
 - make tenant optional optimize svg/css support for no tenant
+- optimize sprites by use an inline webpack build to detect how to distribute them
+  - the plugin can descide if inline makes sense ie if the distributed item is too small for a separate sprite
 - allow splitting into two process: 
   1. only do the js => write classNames to on big file
   2. only do the assets => imports asset file

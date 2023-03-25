@@ -1,3 +1,4 @@
 const tsConfig = require('@dev/eslint/ts.config');
+const baseConfig = require('@dev/eslint/base.config');
 
-module.exports = tsConfig;
+module.exports = [...baseConfig, ...tsConfig];

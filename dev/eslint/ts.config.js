@@ -1,20 +1,25 @@
-const {FlatCompat} = require("@eslint/eslintrc");
-const path = require("node:path");
-const tsESLint = require("@typescript-eslint/eslint-plugin");
-const baseConfig = require('./base.config');
+const tsESLint = require('@typescript-eslint/eslint-plugin');
+const parser = require('@typescript-eslint/parser');
 
 const TSLintConfig = [
-  ...new FlatCompat({
-    baseDirectory: path.join(path.dirname(require.resolve('@typescript-eslint/eslint-plugin/package.json')), 'dist')
-  }).config(tsESLint.configs.recommended),
   {
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
+      parser,
       parserOptions: {
         project: './tsconfig.json',
+        sourceType: 'module',
       },
     },
+    plugins: {
+      '@typescript-eslint': tsESLint,
+    },
+    rules: {
+      ...tsESLint.configs.recommended.rules,
+      ...tsESLint.configs['eslint-recommended'].overrides[0].rules,
+      'init-declarations': 'off',
+    },
   },
-  ...baseConfig
 ];
 
 module.exports = TSLintConfig;

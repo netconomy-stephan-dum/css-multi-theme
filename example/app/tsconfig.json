@@ -1,27 +1,4 @@
 {
-  "exclude": ["node_modules", "**/dist", "**/*.test.js", "**/*.test.ts",
-    "webpack/webpack.config.js"
-  ],
-  "compilerOptions": {
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "moduleResolution": "node",
-    "lib": ["ES2019", "DOM"],
-    "module": "ESNext",
-    "target": "ES2019",
-    "jsx": "preserve",
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "sourceMap": true,
-    "declaration": true,
-    "removeComments": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "resolveJsonModule": true
-  }
+  "exclude": ["node_modules", "**/dist"],
+  "extends": "@dev/typescript/tsconfig.react.json"
 }

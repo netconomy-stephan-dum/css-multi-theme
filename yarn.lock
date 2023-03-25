@@ -111,12 +111,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@example/app@workspace:example/app"
   dependencies:
+    "@dev/eslint": 1.0.0
     "@example/components": 1.0.0
     "@example/engine-browser": 1.0.0
     "@example/icons": 1.0.0
     "@example/routes": 1.0.0
     "@example/tenant-dark": 1.0.0
     "@example/tenant-light": 1.0.0
+    "@multi-tenants/webpack-plugin": 1.0.0
     "@swc/core": 1.3.36
     "@types/react": ^18.0.9
     "@types/react-dom": ^18.0.3
@@ -124,7 +126,6 @@ __metadata:
     classnames: ^2.3.1
     html-webpack-plugin: ^5.5.0
     http-server: ^14.1.1
-    multi-tenants-webpack-plugin: 1.0.0
     react: ^18.1.0
     react-dom: ^18.1.0
     sass-loader: ^13.2.0
@@ -286,6 +287,32 @@ __metadata:
   checksum: 9d703b859cff5cd83b7308fd457a431387db5db96bd781a63bf48e183418dd9d3d44e76b9e4ae13237f6abeeb25d739ec9215c1d5bfdd08f66f750a50074a339
   languageName: node
   linkType: hard
+
+"@multi-tenants/webpack-plugin@1.0.0, @multi-tenants/webpack-plugin@workspace:src":
+  version: 0.0.0-use.local
+  resolution: "@multi-tenants/webpack-plugin@workspace:src"
+  dependencies:
+    "@dev/eslint": 1.0.0
+    "@dev/typescript": 1.0.0
+    "@types/postcss-modules-local-by-default": 4.0.0
+    "@types/postcss-modules-scope": ^3.0.1
+    "@types/postcss-url": ^10.0.0
+    "@types/webpack": ^5.28.0
+    "@types/webpack-sources": ^3.2.0
+    css-loader: ^6.7.3
+    mini-svg-data-uri: ^1.4.4
+    postcss: ^8.4.21
+    postcss-loader: ^7.0.2
+    postcss-modules-extract-imports: ^3.0.0
+    postcss-modules-local-by-default: ^4.0.0
+    postcss-modules-scope: ^3.0.0
+    postcss-url: ^10.1.3
+    sass-loader: ^13.2.0
+    typescript: ^4.9.5
+    webpack: ^5.76.1
+    webpack-sources: ^3.2.3
+  languageName: unknown
+  linkType: soft
 
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
@@ -3729,31 +3756,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multi-tenants-webpack-plugin@1.0.0, multi-tenants-webpack-plugin@workspace:src":
-  version: 0.0.0-use.local
-  resolution: "multi-tenants-webpack-plugin@workspace:src"
-  dependencies:
-    "@dev/eslint": 1.0.0
-    "@dev/typescript": 1.0.0
-    "@types/postcss-modules-local-by-default": 4.0.0
-    "@types/postcss-modules-scope": ^3.0.1
-    "@types/postcss-url": ^10.0.0
-    "@types/webpack": ^5.28.0
-    "@types/webpack-sources": ^3.2.0
-    css-loader: ^6.7.3
-    mini-svg-data-uri: ^1.4.4
-    postcss: ^8.4.21
-    postcss-loader: ^7.0.2
-    postcss-modules-extract-imports: ^3.0.0
-    postcss-modules-local-by-default: ^4.0.0
-    postcss-modules-scope: ^3.0.0
-    postcss-url: ^10.1.3
-    sass-loader: ^13.2.0
-    webpack: ^5.76.1
-    webpack-sources: ^3.2.3
-  languageName: unknown
-  linkType: soft
-
 "nanoid@npm:^3.3.4":
   version: 3.3.4
   resolution: "nanoid@npm:3.3.4"
@@ -4647,8 +4649,6 @@ __metadata:
 "root-workspace-0b6124@workspace:.":
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
-  dependencies:
-    "@dev/eslint": 1.0.0
   languageName: unknown
   linkType: soft
 
@@ -5287,7 +5287,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.6.4":
+"typescript@npm:^4.6.4, typescript@npm:^4.9.5":
   version: 4.9.5
   resolution: "typescript@npm:4.9.5"
   bin:
@@ -5297,7 +5297,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.6.4#~builtin<compat/typescript>":
+"typescript@patch:typescript@^4.6.4#~builtin<compat/typescript>, typescript@patch:typescript@^4.9.5#~builtin<compat/typescript>":
   version: 4.9.5
   resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=bda367"
   bin:
