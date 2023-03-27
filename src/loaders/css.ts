@@ -1,20 +1,20 @@
 import { LoaderDefinition } from 'webpack';
-
 import postcss from 'postcss';
 import localByDefault from 'postcss-modules-local-by-default';
 import modulesScope from 'postcss-modules-scope';
 
 import postcssExport from '../utils/postcssExport';
-import overload, { SearchCallback } from '../utils/overload';
 import { TenantOptions } from '../types';
+import resolveToRelativeOverload from '../utils/resolveToRelativeOverload';
 
 interface DataContext {
-  count: number;
+  order: number;
 }
+
 const cssLoader: LoaderDefinition<TenantOptions, DataContext> = function cssLoader(rawSource) {
   const callback = this.async();
   const options = this.getOptions();
-  const { count } = this.data;
+  const { order } = this.data;
   const moduleMap = {};
 
   postcss([localByDefault(), modulesScope(), postcssExport(moduleMap)])
@@ -23,31 +23,57 @@ const cssLoader: LoaderDefinition<TenantOptions, DataContext> = function cssLoad
       if (messages.length) {
         this.getLogger().log(...messages);
       }
-      const classNames = encodeURIComponent(JSON.stringify(moduleMap));
-      const search: SearchCallback = (tenantName) =>
-        `?${new URLSearchParams({ classNames, tenant: tenantName }).toString()}`;
+      const { appDir, tenants } = options;
+      const { src, dest } = resolveToRelativeOverload(this, options);
 
-      return overload(
-        this,
-        options,
-        (tenantName, targetFile, source) => {
-          this.emitFile(`${tenantName}/${count}/${targetFile}`, source);
-        },
-        search,
-      ).then(() => {
+      const search = new URLSearchParams({
+        classNames: encodeURIComponent(JSON.stringify(moduleMap)),
+        dest,
+        order,
+      }).toString();
+
+      return Promise.all(
+        tenants.map((tenant) => {
+          const { tenantDirs, tenantName } = tenant;
+          return this.getResolve({ modules: tenantDirs })(appDir, src)
+            .catch(() => this.resourcePath)
+            .then(
+              (overloadPath) =>
+                `${this.utils.contextify(
+                  this.context,
+                  overloadPath,
+                )}?${search}&tenant=${tenantName}`,
+            );
+        }),
+      ).then((filePaths) => {
+        const cssPaths = Array.from(new Set(filePaths));
+        const imports = cssPaths.map((filePath) => `require('${filePath}').default`).join(',');
         callback(
           null,
-          [`const moduleMap = ${JSON.stringify(moduleMap)};`, `export default moduleMap;`].join(
-            '\n',
-          ),
+          [
+            `const imports = [${imports}];`,
+            `const moduleMap = ${JSON.stringify(moduleMap)};`,
+            `export default moduleMap;`,
+          ].join('\n'),
         );
-      }, callback);
+      });
     });
 };
 
-let counter = 0;
-cssLoader.pitch = (remainingRequest, precedingRequest, data) => {
-  (data as DataContext).count = counter;
-  counter += 1;
+let loadOrder = 1;
+const loadOrderByRequest = new Map();
+
+cssLoader.pitch = function pitch(remainingRequest, precedingRequest, data) {
+  const order = loadOrderByRequest.get(this.resource) || loadOrder;
+
+  if (order === loadOrder) {
+    loadOrderByRequest.set(this.resource, order);
+    loadOrder += 1;
+  }
+
+  Object.assign(data, {
+    order,
+  });
 };
+
 module.exports = cssLoader;

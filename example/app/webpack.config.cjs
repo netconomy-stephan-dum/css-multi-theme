@@ -19,7 +19,7 @@ const darkTenant = {
 
 const tenants = [darkTenant, lightTenant, baseTenant];
 
-const multiTenantsWebpackPlugin = new MultiTenantsWebpackPlugin(__dirname, tenants);
+const multiTenantsWebpackPlugin = new MultiTenantsWebpackPlugin(__dirname, 'assets', tenants);
 
 const svgPipeline = [
   {
@@ -36,37 +36,55 @@ const svgPipeline = [
 ];
 const scssPipeline = [require.resolve('sass-loader')];
 
-const config = {
-  entry: { browser: path.resolve('./browser.tsx') },
-  experiments: {
-    layers: true,
-  },
-  module: {
-    rules: [
-      ...multiTenantsWebpackPlugin.getAssetRules({
-        css: scssPipeline,
-        svg: svgPipeline,
-      }),
-      {
-        test: /[jt]sx?$/,
-        use: [require.resolve('swc-loader')],
+const config = ({ PORT }) => {
+  return {
+    cache: false,
+    devServer: {
+      compress: true,
+      devMiddleware: {
+        index: true,
+        writeToDisk: true,
       },
+      host: `base.localhost`,
+      hot: true,
+      liveReload: false,
+      port: PORT,
+      static: './dist',
+    },
+    entry: {
+      browser: path.resolve('./browser.tsx'),
+    },
+    experiments: {
+      layers: true,
+    },
+    module: {
+      rules: [
+        ...multiTenantsWebpackPlugin.getAssetRules({
+          css: scssPipeline,
+          svg: svgPipeline,
+        }),
+        {
+          test: /[jt]sx?$/,
+          use: [require.resolve('swc-loader')],
+        },
+      ],
+    },
+    output: {
+      clean: true,
+    },
+    plugins: [
+      new HTMLWebpackPlugin({
+        filename: 'index.html',
+        template: path.resolve('./index.html'),
+        title: '@example App',
+      }),
+      multiTenantsWebpackPlugin,
     ],
-  },
-  output: {
-    clean: true,
-  },
-  plugins: [
-    new HTMLWebpackPlugin({
-      filename: 'index.html',
-      template: path.resolve('./index.html'),
-      title: '@example App',
-    }),
-    multiTenantsWebpackPlugin,
-  ],
-  resolve: {
-    extensions: ['.ts', '.tsx', '...'],
-  },
+    recordsPath: path.join(__dirname, 'dist/records.json'),
+    resolve: {
+      extensions: ['.ts', '.tsx', '...'],
+    },
+  };
 };
 
 module.exports = config;

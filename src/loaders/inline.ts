@@ -1,6 +1,6 @@
-// import path from 'node:path';
-// import { URLSearchParams } from 'node:url';
+import { URLSearchParams } from 'node:url';
 import { LoaderDefinition } from 'webpack';
+import path from 'node:path';
 
 const encode = (code: string) =>
   code
@@ -23,18 +23,19 @@ const addXmlns = (code: string) => {
 };
 
 // TODO: check if a normal asset module can be used instead
-const inlineLoader: LoaderDefinition = function inlineLoader(rawSource) {
+const inlineLoader: LoaderDefinition<{ maxSize?: number }> = function inlineLoader(rawSource) {
   const source = rawSource.toString();
+  const { maxSize = 1024 * 5 } = this.getOptions();
   // TODO: use this.query instead
 
-  // if (source.length > 1024 * 5) {
-  //   const tenantName = new URLSearchParams(this.resourceQuery).get('tenant');
-  //   const publicPath = `/assets/${tenantName}/${path.basename(this.resourcePath)}`;
-  //   this.emitFile(publicPath, source);
-  //   return publicPath;
-  // }
+  if (source.length > maxSize) {
+    const tenantName = new URLSearchParams(this.resourceQuery).get('tenant');
+    const publicPath = `/assets/${tenantName}/${path.basename(this.resourcePath)}`;
+    this.emitFile(publicPath, source);
+    return publicPath;
+  }
 
   return `"data:image/svg+xml;charset=utf-8,${addXmlns(encode(source))}"`;
 };
 
-module.exports = inlineLoader;
+export default inlineLoader;

@@ -22,14 +22,14 @@ const assetTypes: Record<string, AssetHandler> = {
   // jsm: (src) => {
   //   return assetTypes.mjs(src.replace(/\.jsm$/, '.mjs'),)
   // },
-  svg: (href) => {
-    return Object.assign(document.createElement('link'), {
-      href,
-      rel: 'preload',
-      as: 'image',
-      type: 'image/svg+xml'
-    })
-  },
+  // svg: (href) => {
+  //   return Object.assign(document.createElement('link'), {
+  //     href,
+  //     rel: 'preload',
+  //     as: 'image',
+  //     type: 'image/svg+xml'
+  //   })
+  // },
 };
 
 const createAsset = (asset: string) => {

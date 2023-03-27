@@ -4,7 +4,7 @@ import { RawSource, Source } from 'webpack-sources';
 import getCSSRules from './rules/css';
 import getSVGRules from './rules/svg';
 import createSVGChunk from './utils/createSVGChunk';
-import createCSSChunk from './utils/createCSSChunk';
+// import createCSSChunk from './utils/createCSSChunk';
 import createChunk from './utils/createChunk';
 
 const pluginName = 'MultiTenantsWebpackPlugin';
@@ -47,9 +47,9 @@ class MultiTenantsWebpackPlugin {
 
   private readonly options: TenantOptions;
 
-  constructor(appDir: string, tenants: Tenant[]) {
+  constructor(appDir: string, assetPath: string, tenants: Tenant[]) {
     this.tenants = tenants || [DEFAULT_TENANT];
-    this.options = { appDir, tenants };
+    this.options = { appDir, assetPath, tenants };
   }
 
   getCSSRules(use: UseOption) {
@@ -75,22 +75,26 @@ class MultiTenantsWebpackPlugin {
 
         this.tenants.forEach(({ tenantName }) => {
           const assetsByTenantChunkName: Record<string, string[]> = {};
-
           chunks.forEach(({ id, auxiliaryFiles }) => {
             const castedId = `${id}`;
-            const files: string[] = [];
+            const files = Array.from(auxiliaryFiles).filter(
+              (assetFile) =>
+                (!tenantName || assetFile.startsWith(tenantName)) &&
+                /\.css(?:\?.*)?$/.test(assetFile),
+            );
+            // todo: execute based on prod flag
+            // const files: string[] = [];
+            // createChunk(
+            //   compilation,
+            //   auxiliaryFiles,
+            //   tenantName,
+            //   castedId,
+            //   files,
+            //   'css',
+            //   createCSSChunk,
+            // );
             assetsByTenantChunkName[castedId] = files;
 
-            createChunk(
-              compilation,
-              auxiliaryFiles,
-              tenantName,
-              castedId,
-              files,
-              'scss',
-              createCSSChunk,
-              'css',
-            );
             createChunk(
               compilation,
               auxiliaryFiles,
@@ -102,6 +106,7 @@ class MultiTenantsWebpackPlugin {
             );
           });
 
+          // TODO: check how to propage update to this file
           (assets[`assets/${tenantName}/assetsByChunkName.js`] as Source) =
             printAssetsByChunkName(assetsByTenantChunkName);
         });

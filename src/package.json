@@ -8,6 +8,7 @@
     "@types/postcss-modules-scope": "^3.0.1",
     "@types/postcss-url": "^10.0.0",
     "@types/webpack": "^5.28.0",
+    "@types/webpack-env": "^1.18.0",
     "@types/webpack-sources": "^3.2.0",
     "webpack": "^5.76.1"
   },
@@ -23,6 +24,7 @@
     "postcss-modules-scope": "^3.0.0",
     "postcss-url": "^10.1.3",
     "sass-loader": "^13.2.0",
+    "style-loader": "^3.3.2",
     "typescript": "^4.9.5",
     "webpack-sources": "^3.2.3"
   },

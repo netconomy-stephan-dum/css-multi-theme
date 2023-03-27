@@ -12,10 +12,10 @@ const createChunk = (
   createSource: CreateSource,
   targetExt = ext,
 ) => {
-  const fileRegEx = new RegExp(`\\.${ext}$`, 'u'),
-    files = Array.from(chunkAssets).filter(
-      (assetFile) => (!tenantName || assetFile.startsWith(tenantName)) && fileRegEx.test(assetFile),
-    );
+  const fileRegEx = new RegExp(`\\.${ext}(?:\\?.*)?$`, 'u');
+  const files = Array.from(chunkAssets).filter(
+    (assetFile) => (!tenantName || assetFile.startsWith(tenantName)) && fileRegEx.test(assetFile),
+  );
 
   if (!files.length) {
     return null;

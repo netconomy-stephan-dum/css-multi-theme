@@ -10,4 +10,5 @@ export type UseOption = RuleSetUseItem[];
 export interface TenantOptions {
   tenants: Tenant[];
   appDir: string;
+  assetPath: string;
 }

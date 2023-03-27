@@ -1,14 +1,27 @@
 import { TenantOptions, UseOption } from '../types';
+import { RuleSetRule } from 'webpack';
 
-// import svgToMiniDataURI from 'mini-svg-data-uri';
 import createPostCSSOptions from '../utils/createPostCSSOptions';
+
 const KB = 1024;
-const MIN_KB = 5;
+const MIN_KB = 3;
 const inlineOptions = {
   dataUrlCondition: {
     maxSize: MIN_KB * KB,
   },
 };
+
+// utils for tenant generator?
+// generator: {
+//   filename: '[name]_[contenthash].css',
+//   outputPath: ({ module }) => {
+//     const [, queryString] = module.rawRequest.split('?');
+//     const search = new URLSearchParams(queryString);
+//     const tenant = search.get('tenant');
+//     const order = search.get('order');
+//     return `${tenant}/${order}`;
+//   },
+// },
 
 /*
  * Scss imported by javascript from app logic
@@ -33,11 +46,19 @@ const getTenantEmitter = (options: TenantOptions, use: UseOption) => ({
  * enforce that each style only applies possible styles
  * emit all assets from url found within css
  */
-const getStylePipeline = (options: TenantOptions, use: UseOption) => ({
+interface GeneratorRuleSetRule extends Exclude<RuleSetRule, 'generator'> {
+  generator?: {
+    filename?: string;
+    outputPath?: string | ((pathData: { module: { rawRequest: string } }) => string);
+  };
+}
+const getStylePipeline = (options: TenantOptions, use: UseOption): GeneratorRuleSetRule => ({
   issuerLayer: 'collect-css',
   test: /\.scss$/,
-  type: 'asset',
+  type: 'javascript/auto',
   use: [
+    require.resolve('../loaders/hmr'),
+    require.resolve('../loaders/tenantEmitter'),
     {
       loader: require.resolve('postcss-loader'),
       options: {
@@ -53,6 +74,7 @@ const getStylePipeline = (options: TenantOptions, use: UseOption) => ({
  * if the file size is smaller than 5kb the request will return a data uri
  * otherwise a file will be emitted and the according url will be returned instead (similar to asset module)
  */
+
 const getAssetPipelines = () => [
   {
     issuerLayer: 'collect-css',
@@ -66,12 +88,10 @@ const getAssetPipelines = () => [
     type: 'asset',
   },
   {
-    // generator: {
-    //   dataUrl: (content: Buffer) => svgToMiniDataURI(content.toString()),
-    // },
     issuerLayer: 'collect-css',
     loader: require.resolve('../loaders/inline'),
-    parser: inlineOptions,
+    options: inlineOptions.dataUrlCondition,
+    resource: /\.svg$/,
     test: /\.svg$/,
     type: 'asset',
   },

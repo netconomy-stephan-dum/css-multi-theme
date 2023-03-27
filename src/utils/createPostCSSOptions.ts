@@ -1,7 +1,6 @@
 import { TenantOptions } from '../types';
 
 import { URLSearchParams } from 'node:url';
-// import { DEFAULT_TENANT } from '../MultiTenantsWebpackPlugin';
 import path from 'node:path';
 import localByDefault from 'postcss-modules-local-by-default';
 import modulesScope from 'postcss-modules-scope';
@@ -40,7 +39,6 @@ const createPostCSSOptions =
     // TODO: use context.query instead
     const search = new URLSearchParams(context.resourceQuery);
     const searchTenantName = search.get('tenant');
-
     const tenant = options.tenants.find(({ tenantName }) => tenantName === searchTenantName);
 
     if (!tenant) {
@@ -65,7 +63,6 @@ const createPostCSSOptions =
               .then(
                 (overloadPath) =>
                   new Promise((resolve, reject) => {
-                    console.log(`overload path: ${relativeReducePath}/${asset.url}`);
                     context.loadModule(`${overloadPath}?tenant=${tenantName}`, (error, source) => {
                       if (error) {
                         return reject(error);

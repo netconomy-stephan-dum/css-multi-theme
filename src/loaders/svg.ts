@@ -19,7 +19,7 @@ const svgLoader: LoaderDefinition<TenantOptions> = function svgLoader(source) {
     }
     const [, viewBox] = viewBoxMatch;
     const iconName = path.basename(this.resourcePath, '.svg');
-    const helperPath = require.resolve('../utils/spriteStringToObject').replace(/\\\\?/g, '/');
+    const helperPath = require.resolve('../runtime/spriteStringToObject').replace(/\\\\?/g, '/');
 
     callback(
       null,

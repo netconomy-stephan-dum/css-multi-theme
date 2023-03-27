@@ -88,21 +88,21 @@ execute `yarn start` to run all scripts and start the server
 go to one of the addresses added to host file with approriate PORT (default is 8080)
 
 ## Roadmap:
-- add eslint & stylelint
+- add stylelint
 - add static dir overload to plugin
-- hmr for scss
 - sprite also for svg inside css url
 - rework options
   - split css in pre and post step
   - css post css plugins as options
   - add inline loader maxFileSize as option
   - add custom spriteStringToObject 
-- inline loader add resolve with all possible image extensions to loader load ie svg with jpg
 - prepare package.json for release
 
 ## v2
 - use a javascript parser as starting point to avoid loading the file and not using it
 - make tenant optional optimize svg/css support for no tenant
+- inline loader add resolve with all possible image extensions to loader load ie svg with jpg
+- add warning if the ratio of the svg blueprint does not match the overloaded file viewbox ratio
 - optimize sprites by use an inline webpack build to detect how to distribute them
   - the plugin can descide if inline makes sense ie if the distributed item is too small for a separate sprite
 - allow splitting into two process: 
