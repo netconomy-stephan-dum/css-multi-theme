@@ -1,22 +1,21 @@
-// import { access, readFile } from 'node:fs/promises';
-import { existsSync, readFileSync } from 'node:fs';
+import { access, readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { LoaderContext } from 'webpack';
 import { TenantOptions } from '../types';
 
-import path from 'node:path';
-
-// const exists = (filePath: string) =>
-//   access(filePath).then(
-//     () => true,
-//     () => false,
-//   );
+const exists = (filePath: string) =>
+  access(filePath).then(
+    () => true,
+    () => false,
+  );
 const upwardReg = /^((?:\.\.\/)*)(.*)/;
-const findPkgRecursive = (base: string, segments: string[], index = -1): string => {
+const findPkgRecursive = async (base: string, segments: string[], index = -1): Promise<string> => {
   const filePath = `${base}/${segments.slice(0, index).join('/')}/package.json`;
 
-  if (existsSync(filePath)) {
+  if (await exists(filePath)) {
     return path.dirname(filePath);
   }
+
   return findPkgRecursive(base, segments, index - 1);
 };
 const findPkgDir = (relative: string, appDir: string) => {
@@ -26,22 +25,18 @@ const findPkgDir = (relative: string, appDir: string) => {
   return findPkgRecursive(base, segments);
 };
 
-// const isInternalRequestReg = /^\.?\//;
-const resolveToRelativeOverload = (
+const resolveToRelativeOverload = async (
   context: LoaderContext<TenantOptions>,
   { appDir }: TenantOptions,
 ) => {
   const { resourcePath } = context;
-  // const { rawRequest } = mod as NormalModule;
-
   const overloadPath = path.relative(appDir, resourcePath).replace(/\\\\?/g, '/');
 
   if (overloadPath.startsWith('..')) {
     // Requested file from package.json
+    const packageDir = await findPkgDir(overloadPath, appDir);
     // TODO: use async
-    const packageDir = findPkgDir(overloadPath, appDir);
-    // TODO: use async
-    const pkgJSON = JSON.parse(readFileSync(`${packageDir}/package.json`, { encoding: 'utf-8' }));
+    const pkgJSON = JSON.parse(await readFile(`${packageDir}/package.json`, { encoding: 'utf-8' }));
     const filePath = path
       .join(pkgJSON.name, path.relative(packageDir, resourcePath))
       .replace(/\\\\?/g, '/');

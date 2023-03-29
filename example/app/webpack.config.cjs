@@ -19,7 +19,7 @@ const darkTenant = {
 
 const tenants = [darkTenant, lightTenant, baseTenant];
 
-const multiTenantsWebpackPlugin = new MultiTenantsWebpackPlugin(__dirname, tenants);
+const multiTenantsWebpackPlugin = new MultiTenantsWebpackPlugin(__dirname, 'assets', tenants);
 
 const svgPipeline = [
   {
@@ -36,37 +36,58 @@ const svgPipeline = [
 ];
 const scssPipeline = [require.resolve('sass-loader')];
 
-const config = {
-  entry: { browser: path.resolve('./browser.tsx') },
-  experiments: {
-    layers: true,
+const getDevServer = ({ PORT }) => ({
+  compress: true,
+  devMiddleware: {
+    index: true,
+    writeToDisk: true,
   },
-  module: {
-    rules: [
-      ...multiTenantsWebpackPlugin.getAssetRules({
-        css: scssPipeline,
-        svg: svgPipeline,
+  host: `base.localhost`,
+  // hot: true,
+  liveReload: false,
+  port: PORT,
+  static: './dist',
+});
+const config = (env) => {
+  return {
+    cache: false,
+    devServer: getDevServer(env),
+    entry: {
+      browser: path.resolve('./browser.tsx'),
+    },
+    experiments: {
+      layers: true,
+    },
+    module: {
+      rules: [
+        ...multiTenantsWebpackPlugin.getAssetRules({
+          css: scssPipeline,
+          svg: svgPipeline,
+        }),
+        {
+          test: /[jt]sx?$/,
+          use: [require.resolve('swc-loader')],
+        },
+      ],
+    },
+    output: {
+      clean: true,
+    },
+    plugins: [
+      new HTMLWebpackPlugin({
+        filename: 'index.html',
+        template: path.resolve('./index.html'),
+        title: '@example App',
       }),
-      {
-        test: /[jt]sx?$/,
-        use: [require.resolve('swc-loader')],
-      },
+      multiTenantsWebpackPlugin,
     ],
-  },
-  output: {
-    clean: true,
-  },
-  plugins: [
-    new HTMLWebpackPlugin({
-      filename: 'index.html',
-      template: path.resolve('./index.html'),
-      title: '@example App',
-    }),
-    multiTenantsWebpackPlugin,
-  ],
-  resolve: {
-    extensions: ['.ts', '.tsx', '...'],
-  },
+    resolve: {
+      extensions: ['.ts', '.tsx', '...'],
+    },
+    // recordsPath: path.join(__dirname, './private/records.json'),
+    // stats: 'errors-only',
+    stats: 'minimal',
+  };
 };
 
 module.exports = config;

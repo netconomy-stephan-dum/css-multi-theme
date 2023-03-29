@@ -12,17 +12,17 @@ const createChunk = (
   createSource: CreateSource,
   targetExt = ext,
 ) => {
-  const fileRegEx = new RegExp(`\\.${ext}$`, 'u'),
-    files = Array.from(chunkAssets).filter(
-      (assetFile) => (!tenantName || assetFile.startsWith(tenantName)) && fileRegEx.test(assetFile),
-    );
+  const fileRegEx = new RegExp(`\\.${ext}(?:\\?.*)?$`, 'u');
+  const files = Array.from(chunkAssets).filter(
+    (assetFile) => assetFile.startsWith(`assets/${tenantName}`) && fileRegEx.test(assetFile),
+  );
 
   if (!files.length) {
     return null;
   }
 
   const rawSource = createSource(compilation.assets, files);
-  const filePath = `assets/${tenantName ? `${tenantName}/` : ''}${targetExt}/${id}.${targetExt}`;
+  const filePath = `assets/${tenantName}/${targetExt}/${id}.${targetExt}`;
 
   assets.push(filePath);
   // TODO: type mismatch in both upstream repos and webpack doesnt export Source

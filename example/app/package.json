@@ -28,11 +28,12 @@
     "sass-loader": "^13.2.0",
     "svgo-loader": "^4.0.0",
     "swc-loader": "0.2.3",
-    "webpack": "^5.75.0"
+    "webpack": "^5.75.0",
+    "webpack-dev-server": "^4.13.1"
   },
   "scripts": {
     "lint": "yarn eslint .",
     "debug": "node --inspect-brk $(yarn bin webpack-cli) --mode development",
-    "dev": "webpack-cli --mode development --config webpack.config.cjs"
+    "dev": "webpack-cli serve --mode development --config webpack.config.cjs"
   }
 }

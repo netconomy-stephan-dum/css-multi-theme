@@ -8,13 +8,29 @@ interface Glyph {
   id: string;
 }
 
+type RawGlyph = [string, string, string];
 interface IconProps {
-  glyph: Glyph;
+  glyph: RawGlyph;
 }
 
+
+const spriteStringToObject = ([chunkName, hash, viewBox]: RawGlyph): Glyph => {
+  // TODO: read width & height from svg attribute instead
+  // TODO: use React context instead of window.tenantName
+  const [, , width, height] = viewBox.split(' ');
+  return {
+    height,
+    id: hash,
+    url: `/assets/${window.tenantName}/svg/${chunkName}.svg#${hash}`,
+    viewBox,
+    width,
+  };
+};
+
 const Icon: FunctionComponent<IconProps> = ({ glyph }) => {
-  const { width, height, url } = glyph;
-  console.log(glyph);
+  const { width, height, url } = spriteStringToObject(glyph);
+  console.log(url, height, width);
+
   return (
     <svg width={width} height={height}><use xlinkHref={url}/></svg>
   )

@@ -1,8 +1,10 @@
 {
   "extends": "@dev/typescript/tsconfig.base.json",
+  "exclude": ["eslint.config.js", "dist"],
   "compilerOptions": {
     "outDir": "dist",
     "target": "es2019",
-    "module": "commonjs"
+    "module": "commonjs",
+    "sourceMap": false
   }
 }

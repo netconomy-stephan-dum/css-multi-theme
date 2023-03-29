@@ -14,6 +14,7 @@ const baseConfig = [
     rules: {
       'capitalized-comments': 'off',
       'line-comment-position': 'off',
+      'max-lines-per-function': ['error', 100],
       'max-params': 'off',
       'multiline-comment-style': 'off',
       'no-empty-function': 'off',
@@ -21,6 +22,7 @@ const baseConfig = [
       'no-invalid-this': 'off',
       'no-magic-numbers': 'off',
       'no-ternary': 'off',
+      'no-underscore-dangle': 'off',
       'no-warning-comments': 'off',
       'one-var': 'off',
       'prefer-named-capture-group': 'off',

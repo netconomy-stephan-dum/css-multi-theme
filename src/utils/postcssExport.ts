@@ -1,5 +1,4 @@
 import { PluginCreator } from 'postcss';
-
 interface ObjectNode {
   prop: string;
   value: string;

@@ -18,6 +18,8 @@ const TSLintConfig = [
       ...tsESLint.configs.recommended.rules,
       ...tsESLint.configs['eslint-recommended'].overrides[0].rules,
       'init-declarations': 'off',
+      'no-var': 'off',
+      'vars-on-top': 'off',
     },
   },
 ];

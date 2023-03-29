@@ -1,12 +1,10 @@
-import { TenantOptions } from '../types';
-
 import { URLSearchParams } from 'node:url';
-// import { DEFAULT_TENANT } from '../MultiTenantsWebpackPlugin';
 import path from 'node:path';
 import localByDefault from 'postcss-modules-local-by-default';
 import modulesScope from 'postcss-modules-scope';
 import postcssURL from 'postcss-url';
 import { LoaderContext } from 'webpack';
+import { TenantOptions } from '../types';
 import postcssExport from './postcssExport';
 import resolveToRelativeOverload from './resolveToRelativeOverload';
 
@@ -40,7 +38,6 @@ const createPostCSSOptions =
     // TODO: use context.query instead
     const search = new URLSearchParams(context.resourceQuery);
     const searchTenantName = search.get('tenant');
-
     const tenant = options.tenants.find(({ tenantName }) => tenantName === searchTenantName);
 
     if (!tenant) {
@@ -48,9 +45,6 @@ const createPostCSSOptions =
     }
 
     const { tenantDirs, tenantName } = tenant;
-    const { src } = resolveToRelativeOverload(context, options);
-    const relativeReducePath = path.dirname(src);
-    const resolveRequest = context.getResolve({ modules: tenantDirs });
 
     return {
       plugins: [
@@ -58,14 +52,16 @@ const createPostCSSOptions =
         getModulesScope(context),
         postcssExport(),
         postcssURL({
-          url: (asset) =>
+          url: async (asset) => {
+            const { src } = await resolveToRelativeOverload(context, options);
+            const relativeReducePath = path.dirname(src);
+            const resolveRequest = context.getResolve({ modules: tenantDirs });
             // TODO: check what happens if asset.url is an absolute path
-            resolveRequest(options.appDir, `${relativeReducePath}/${asset.url}`)
+            return resolveRequest(options.appDir, `${relativeReducePath}/${asset.url}`)
               .catch(() => path.join(path.dirname(context.resourcePath), asset.url))
               .then(
                 (overloadPath) =>
                   new Promise((resolve, reject) => {
-                    console.log(`overload path: ${relativeReducePath}/${asset.url}`);
                     context.loadModule(`${overloadPath}?tenant=${tenantName}`, (error, source) => {
                       if (error) {
                         return reject(error);
@@ -73,7 +69,8 @@ const createPostCSSOptions =
                       return resolve(source.toString());
                     });
                   }),
-              ),
+              );
+          },
         }),
       ],
     };

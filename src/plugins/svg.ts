@@ -21,14 +21,14 @@ const setupOptions = {
   stage: Compilation.PROCESS_ASSETS_STAGE_DERIVED,
 };
 const extendAssetsByChunkName = (compilation: Compilation, tenantName = '') => {
-  const { chunks, assets } = compilation,
-    // TODO: we should use json instead
-    assetsByChunkName: Record<string, string[]> = {};
-  // Const assetsByChunkName = new Function('return '+(assets[`assets/assetsByChunkName.js`].source().toString() || '{}'))();
+  const { chunks, assets } = compilation;
+  // TODO: we should use json instead
+  const assetsByChunkName: Record<string, string[]> = {};
+  // const assetsByChunkName = new Function('return '+(assets[`assets/assetsByChunkName.js`].source().toString() || '{}'))();
   chunks.forEach((chunk) => {
-    const { id, auxiliaryFiles } = chunk,
-      castedId = `${id}`,
-      files: string[] = [];
+    const { id, auxiliaryFiles } = chunk;
+    const castedId = `${id}`;
+    const files: string[] = [];
     assetsByChunkName[castedId] = files;
     createChunk(compilation, auxiliaryFiles, tenantName, castedId, files, 'svg', createSVGChunk);
   });

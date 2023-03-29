@@ -8,7 +8,7 @@ const createSVGChunk = (assets: Compilation['assets'], filePaths: string[]) => {
       assets[filePath]
         .source()
         .toString()
-        .replace(/^<svg /, `<symbol id="${path.basename(filePath, '.svg')}" `)
+        .replace(/^<svg /, `<symbol id="${path.basename(filePath, '.svg').split('_')[0]}" `)
         .replace(/<\/svg>$/, '</symbol>'),
     );
   });

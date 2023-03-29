@@ -1,27 +1,20 @@
 import { Chunk, Compilation, Compiler } from 'webpack';
+import { writeFile, mkdir } from 'node:fs/promises';
 import { Tenant, TenantOptions, UseOption } from './types';
 import { RawSource, Source } from 'webpack-sources';
+import path from 'node:path';
 import getCSSRules from './rules/css';
 import getSVGRules from './rules/svg';
 import createSVGChunk from './utils/createSVGChunk';
-import createCSSChunk from './utils/createCSSChunk';
 import createChunk from './utils/createChunk';
+import sortPaths from './utils/sortPaths';
+import getManifestSyncRule from './rules/manifestSync';
 
 const pluginName = 'MultiTenantsWebpackPlugin';
-type AssetsByChunkName = Record<string, string[]>;
 interface GlobalOptions {
   svg?: UseOption;
   css?: UseOption;
 }
-const printAssetsByChunkName = (assetsByChunkName: AssetsByChunkName) =>
-  new RawSource(
-    [
-      `const assetsByChunkName = ${JSON.stringify(assetsByChunkName)};`,
-      `export default assetsByChunkName;`,
-    ].join('\n'),
-  );
-
-export const DEFAULT_TENANT = { tenantDirs: [], tenantName: 'default' };
 
 const hookOptions = {
   name: pluginName,
@@ -43,67 +36,81 @@ const replaceInChunks = (compilation: Compilation, replacer: Replacer = noop) =>
 };
 
 class MultiTenantsWebpackPlugin {
-  private readonly tenants: Tenant[];
-
   private readonly options: TenantOptions;
 
-  constructor(appDir: string, tenants: Tenant[]) {
-    this.tenants = tenants || [DEFAULT_TENANT];
-    this.options = { appDir, tenants };
-  }
-
-  getCSSRules(use: UseOption) {
-    return getCSSRules(this.options, use);
-  }
-
-  getSVGRules(use: UseOption) {
-    return getSVGRules(this.options, use);
+  constructor(appDir: string, assetPath: string, tenants: Tenant[]) {
+    this.options = { appDir, assetPath, tenants };
   }
 
   getAssetRules(use: GlobalOptions = {}) {
-    return [...this.getSVGRules(use.svg || []), ...this.getCSSRules(use.css || [])];
+    return [
+      getManifestSyncRule(this.options),
+      ...getSVGRules(this.options, use.svg || []),
+      ...getCSSRules(this.options, use.css || []),
+    ];
   }
 
   apply(compiler: Compiler) {
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
-      compilation.hooks.processAssets.tap(hookOptions, () => {
-        const { chunks, assets } = compilation;
+      compilation.hooks.processAssets.tapPromise(hookOptions, () => {
+        const { chunks } = compilation;
+        const { assetPath, tenants } = this.options;
 
-        replaceInChunks(compilation, (rawSource, { id }) =>
-          rawSource.replace(/__sprite_name__/g, `\\"${id}\\"`),
-        );
+        return Promise.all(
+          tenants.map(({ tenantName }) => {
+            const assetsByTenantChunkName: Record<string, string[]> = {};
 
-        this.tenants.forEach(({ tenantName }) => {
-          const assetsByTenantChunkName: Record<string, string[]> = {};
+            chunks.forEach(({ id, auxiliaryFiles }) => {
+              const castedId = `${id}`;
+              const cssFiles = sortPaths(
+                Array.from(auxiliaryFiles).filter(
+                  (assetFile) =>
+                    assetFile.startsWith(`${assetPath}/${tenantName}`) &&
+                    /\.css(?:\?.*)?$/.test(assetFile),
+                ),
+              );
+              // todo: execute based on prod flag
+              // const files: string[] = [];
+              // createChunk(
+              //   compilation,
+              //   auxiliaryFiles,
+              //   tenantName,
+              //   castedId,
+              //   files,
+              //   'css',
+              //   createCSSChunk,
+              // );
 
-          chunks.forEach(({ id, auxiliaryFiles }) => {
-            const castedId = `${id}`;
-            const files: string[] = [];
-            assetsByTenantChunkName[castedId] = files;
+              const svgFiles: string[] = [];
 
-            createChunk(
-              compilation,
-              auxiliaryFiles,
-              tenantName,
-              castedId,
-              files,
-              'scss',
-              createCSSChunk,
-              'css',
+              createChunk(
+                compilation,
+                auxiliaryFiles,
+                tenantName,
+                castedId,
+                svgFiles,
+                'svg',
+                createSVGChunk,
+              );
+
+              assetsByTenantChunkName[castedId] = [...cssFiles, ...svgFiles];
+            });
+            const assetsByChunkNameModule = [
+              `const assetsByChunkName = ${JSON.stringify(assetsByTenantChunkName)};`,
+              `export default assetsByChunkName;`,
+            ].join('\n');
+
+            // file is written directly to allow hmr without initial resync
+            const assetFilePath = `./dist/${assetPath}/${tenantName}/assetsByChunkName.js`;
+
+            return mkdir(path.dirname(assetFilePath), { recursive: true }).then(() =>
+              writeFile(assetFilePath, assetsByChunkNameModule.toString(), { encoding: 'utf-8' }),
             );
-            createChunk(
-              compilation,
-              auxiliaryFiles,
-              tenantName,
-              castedId,
-              files,
-              'svg',
-              createSVGChunk,
-            );
-          });
-
-          (assets[`assets/${tenantName}/assetsByChunkName.js`] as Source) =
-            printAssetsByChunkName(assetsByTenantChunkName);
+          }),
+        ).then(() => {
+          replaceInChunks(compilation, (rawSource, { id }) =>
+            rawSource.replace(/__sprite_name__/g, `${id}`),
+          );
         });
       });
     });
