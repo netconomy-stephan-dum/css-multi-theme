@@ -1,14 +1,16 @@
 import { Chunk, Compilation, Compiler } from 'webpack';
 import { writeFile, mkdir } from 'node:fs/promises';
-import { Tenant, TenantOptions, UseOption } from './types';
+import { ChunkHandler, Tenant, TenantOptions, UseOption } from './types';
 import { RawSource, Source } from 'webpack-sources';
 import path from 'node:path';
 import getCSSRules from './rules/css';
 import getSVGRules from './rules/svg';
 import createSVGChunk from './utils/createSVGChunk';
+import createCSSChunk from './utils/createCSSChunk';
 import createChunk from './utils/createChunk';
 import sortPaths from './utils/sortPaths';
 import getManifestSyncRule from './rules/manifestSync';
+import { createHash } from 'node:crypto';
 
 const pluginName = 'MultiTenantsWebpackPlugin';
 interface GlobalOptions {
@@ -35,6 +37,41 @@ const replaceInChunks = (compilation: Compilation, replacer: Replacer = noop) =>
   });
 };
 
+const filterExt = (
+  auxiliaryFiles: Set<string>,
+  assetPath: string,
+  tenantName: string,
+  ext: string,
+) =>
+  Array.from(auxiliaryFiles).filter(
+    (assetFile) =>
+      assetFile.startsWith(`${assetPath}/${tenantName}`) &&
+      new RegExp(`\\.${ext}(?:\\?.*)?$`).test(assetFile),
+  );
+
+const getDevAssets = (chunkData: ChunkHandler) => {
+  const { auxiliaryFiles, assetPath, tenantName } = chunkData;
+  const files = sortPaths(filterExt(auxiliaryFiles, assetPath, tenantName, 'css'));
+  // const svgFiles = filterExt(auxiliaryFiles, assetPath, tenantName, 'svg');
+  // svgFiles.forEach((file) => {
+  //   (compilation.assets[file] as Source) = new RawSource(
+  //     createSVGChunk(compilation.assets, [file]),
+  //   );
+  // });
+
+  return files;
+  // return [...cssFiles, ...svgFiles];
+};
+
+const getProdAssets = (chunkData: ChunkHandler) => {
+  const assets: string[] = [];
+  createChunk(chunkData, assets, 'css', createCSSChunk);
+  return assets;
+};
+
+const IS_PROD = process.env.NODE_ENV === 'production';
+const getAssets = IS_PROD ? getProdAssets : getDevAssets;
+
 class MultiTenantsWebpackPlugin {
   private readonly options: TenantOptions;
 
@@ -53,48 +90,40 @@ class MultiTenantsWebpackPlugin {
   apply(compiler: Compiler) {
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
       compilation.hooks.processAssets.tapPromise(hookOptions, () => {
-        const { chunks } = compilation;
+        const { chunks, assets } = compilation;
         const { assetPath, tenants } = this.options;
 
         return Promise.all(
           tenants.map(({ tenantName }) => {
             const assetsByTenantChunkName: Record<string, string[]> = {};
 
-            chunks.forEach(({ id, auxiliaryFiles }) => {
+            chunks.forEach(({ id, auxiliaryFiles, files }) => {
               const castedId = `${id}`;
-              const cssFiles = sortPaths(
-                Array.from(auxiliaryFiles).filter(
-                  (assetFile) =>
-                    assetFile.startsWith(`${assetPath}/${tenantName}`) &&
-                    /\.css(?:\?.*)?$/.test(assetFile),
-                ),
-              );
-              // todo: execute based on prod flag
-              // const files: string[] = [];
-              // createChunk(
-              //   compilation,
-              //   auxiliaryFiles,
-              //   tenantName,
-              //   castedId,
-              //   files,
-              //   'css',
-              //   createCSSChunk,
-              // );
-
-              const svgFiles: string[] = [];
-
-              createChunk(
-                compilation,
+              const chunkData = {
+                assetPath,
                 auxiliaryFiles,
+                compilation,
+                id: castedId,
                 tenantName,
-                castedId,
-                svgFiles,
-                'svg',
-                createSVGChunk,
-              );
-
+              };
+              const svgFiles: string[] = [];
+              createChunk(chunkData, svgFiles, 'svg', createSVGChunk);
+              const cssFiles = getAssets(chunkData);
               assetsByTenantChunkName[castedId] = [...cssFiles, ...svgFiles];
+
+              const [svgSprite] = svgFiles;
+              if (svgSprite) {
+                files.forEach((chunkFile) => {
+                  (assets[chunkFile] as Source) = new RawSource(
+                    assets[chunkFile]
+                      .source()
+                      .toString()
+                      .replace(/__sprite_name__/g, svgSprite),
+                  );
+                });
+              }
             });
+
             const assetsByChunkNameModule = [
               `const assetsByChunkName = ${JSON.stringify(assetsByTenantChunkName)};`,
               `export default assetsByChunkName;`,
@@ -108,9 +137,9 @@ class MultiTenantsWebpackPlugin {
             );
           }),
         ).then(() => {
-          replaceInChunks(compilation, (rawSource, { id }) =>
-            rawSource.replace(/__sprite_name__/g, `${id}`),
-          );
+          // replaceInChunks(compilation, (rawSource, { id }) =>
+          //   rawSource.replace(/__sprite_name__/g, `${id}.svg${IS_PROD?'':`?${new Date().getTime()}`}`),
+          // );
         });
       });
     });

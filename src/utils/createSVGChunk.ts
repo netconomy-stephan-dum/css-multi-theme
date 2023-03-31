@@ -2,7 +2,8 @@ import path from 'node:path';
 import { Compilation } from 'webpack';
 const createSVGChunk = (assets: Compilation['assets'], filePaths: string[]) => {
   const symbols: string[] = [];
-  filePaths.forEach((filePath) => {
+  // sort is need to keep contentHash stable
+  filePaths.sort().forEach((filePath) => {
     // TODO: strip xmlns! also width & height
     symbols.push(
       assets[filePath]

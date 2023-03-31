@@ -14,14 +14,14 @@ interface IconProps {
 }
 
 
-const spriteStringToObject = ([chunkName, hash, viewBox]: RawGlyph): Glyph => {
+const spriteStringToObject = ([basePath, hash, viewBox]: RawGlyph): Glyph => {
   // TODO: read width & height from svg attribute instead
   // TODO: use React context instead of window.tenantName
   const [, , width, height] = viewBox.split(' ');
   return {
     height,
     id: hash,
-    url: `/assets/${window.tenantName}/svg/${chunkName}.svg#${hash}`,
+    url: `/assets/${window.tenantName}/svg/${basePath}#${hash}`,
     viewBox,
     width,
   };

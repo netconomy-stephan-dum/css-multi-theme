@@ -3,7 +3,12 @@ import { TenantOptions, UseOption } from '../types';
 const injectHot = (linkPath: string) => {
   if (module.hot) {
     module.hot.accept('__module_path__', () => {
-      const selectorPath = linkPath.split('_').slice(0, -1).join('_').split('/').pop();
+      // const selectorPath = linkPath.split('_').slice(0, -1).join('_').split('/').pop();
+      // const match = linkPath.replace(/_.*?\.svg(#.*)$/, '$1');
+      const [selectorPath] = (linkPath.split('/').pop() as string).split('.');
+      // const match = basename.match(/(.*)\.svg$/);
+      // if (match) {
+      //   const [, selectorPath] = match;
       console.log(selectorPath);
       console.log(`[*|href$="#${selectorPath}"]:not([href])`);
       console.log(`[src$="#${selectorPath}"])`);
@@ -15,14 +20,16 @@ const injectHot = (linkPath: string) => {
             `?${new Date().getTime()}$1`,
           ),
         );
-      }
+      };
       document.querySelectorAll(`[*|href$="#${selectorPath}"]:not([href])`).forEach((elem) => {
         updateProp(elem, 'xlink:href');
       });
 
       document.querySelectorAll(`[src$="#${selectorPath}"]`).forEach((elem) => {
         updateProp(elem, 'src');
+        // elem.setAttribute('src', linkPath);
       });
+      // }
     });
   }
 };

@@ -61,19 +61,11 @@ const injectHotCSS = (linkPath: string) => {
   if (module.hot) {
     const getChangedElement = () => {
       const doc = document;
-      const segments = linkPath.replace(doc.location.origin, '').split('/');
-      const path = segments
-        .slice(3)
-        .join('/')
-        .replace(/_.+?\.css$/, '');
+      const path = linkPath.replace(doc.location.origin, '').replace(/(_.*?)?\.css/, '');
 
-      const elem = doc.querySelector<HTMLLinkElement>(`link[href*="${path}"]`);
+      const elem = doc.querySelector<HTMLLinkElement>(`link[href^="${path}"]`);
 
-      if (elem && elem.href.replace(doc.location.origin, '').startsWith(`/${segments[1]}`)) {
-        return elem;
-      }
-
-      return {} as HTMLLinkElement;
+      return elem || ({} as HTMLLinkElement);
     };
     // will be replaced later when used
     module.hot.accept('__module_path__', () => {

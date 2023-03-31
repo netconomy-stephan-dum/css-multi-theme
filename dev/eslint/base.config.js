@@ -16,6 +16,7 @@ const baseConfig = [
       'line-comment-position': 'off',
       'max-lines-per-function': ['error', 100],
       'max-params': 'off',
+      'max-statements': ['error', 20],
       'multiline-comment-style': 'off',
       'no-empty-function': 'off',
       'no-inline-comments': 'off',

@@ -2,7 +2,7 @@ import React, { FunctionComponent, ReactElement, Suspense } from 'react';
 import { createRoot } from "react-dom/client";
 import AssetHandler from "./loadable/AssetHandler";
 import assetsByTenant from '@multi-tenants/webpack-plugin/manifestByTenant';
-export type AssetsByChunkName = Record<string, string[]>;
+import { AssetsByChunkName, Route } from '@example/engine-core/types';
 export type ImportHandler<T> = () => Promise<{ default: T }>;
 
 declare global {
@@ -12,10 +12,7 @@ declare global {
     assetsByChunkName: AssetsByChunkName;
   }
 }
-export interface Route {
-  Component: FunctionComponent;
-  reg: RegExp;
-}
+
 const getRoute = (path: string, routes: Route[]) => {
   for (let i = 0; i < routes.length; i++) {
     const match = routes[i].reg.exec(path);
@@ -38,15 +35,12 @@ interface BrowserEngineOptions {
 
 const updateAssetsByTenant = async () => {
   const { default: assetsByChunkName } = await import(/* webpackIgnore: true */ assetsByTenant[browserEngine.tenantName]);
-
-  console.log('updating', assetsByChunkName);
   // TODO: move to context service
   window.assetsByChunkName = assetsByChunkName;
 };
 
 if (module.hot) {
   module.hot.accept('@multi-tenants/webpack-plugin/manifestByTenant', () => {
-    console.log('## accept')
     return updateAssetsByTenant();
   });
 }

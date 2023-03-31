@@ -1,7 +1,7 @@
 import React, { FunctionComponent, ReactElement } from 'react';
-import Icon from '@example/components/Icon';
+import Icon from 'Icon';
 import logo from './logo.svg';
-import './variables.scss';
+import '../../app/variables.scss';
 import styles from './Layout.scss';
 import overloadStyle from './overloaderStyle.scss';
 
@@ -48,7 +48,7 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
             <a href="https://icons8.com">All icons from Icons8.com</a>
           </li>
           <li>
-            <a href="/imprint">Imprint</a>
+            <a href="/Imprint">Imprint</a>
           </li>
         </ul>
       </footer>

@@ -16,9 +16,9 @@ const cssLoader: LoaderDefinition<TenantOptions, DataContext> = function cssLoad
   const options = this.getOptions();
   const { order } = this.data;
   const moduleMap = {};
-
+  const source = rawSource.toString();
   postcss([localByDefault(), modulesScope(), postcssExport(moduleMap)])
-    .process(rawSource.toString(), { from: this.resourcePath })
+    .process(source, { from: this.resourcePath })
     .then(async ({ messages }) => {
       if (messages.length) {
         this.getLogger().log(...messages);
@@ -33,7 +33,7 @@ const cssLoader: LoaderDefinition<TenantOptions, DataContext> = function cssLoad
 
           const search = new URLSearchParams({
             classNames,
-            dest: `${tenantName}/${order}/${dest}`.replace(/\.scss$/, `.css`),
+            dest: `${tenantName}/css/${order}/${dest}`.replace(/\.scss$/, `.css`),
             tenant: tenantName,
           }).toString();
 

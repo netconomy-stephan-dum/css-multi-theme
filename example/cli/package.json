@@ -1,0 +1,26 @@
+{
+  "name": "@example/cli",
+  "version": "1.0.0",
+  "dependencies": {
+    "webpack": "^5.77.0"
+  },
+  "scripts": {
+    "test": "webpack serve --progress -c configs/devServer.js -c configs/server.js -c configs/browser -c configs/universal.js"
+  },
+  "devDependencies": {
+    "@dev/eslint": "1.0.0",
+    "@dev/typescript": "1.0.0",
+    "@types/cross-spawn": "^6.0.2",
+    "@types/node": "^18.15.11",
+    "@types/webpack": "^5.28.0",
+    "@types/webpack-env": "^1.18.0",
+    "cross-spawn": "^7.0.3",
+    "run-script-webpack-plugin": "^0.1.1",
+    "ts-loader": "^9.4.2",
+    "ts-node": "^10.9.1",
+    "typescript": "4.8.4",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.13.1",
+    "webpack-node-externals": "^3.0.0"
+  }
+}

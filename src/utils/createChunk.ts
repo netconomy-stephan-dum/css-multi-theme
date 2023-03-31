@@ -1,28 +1,27 @@
-import { Chunk, Compilation } from 'webpack';
+import { Compilation } from 'webpack';
 import { RawSource } from 'webpack-sources';
+import { ChunkHandler } from '../types';
+import { createHash } from 'node:crypto';
 
 type CreateSource = (assets: Compilation['assets'], files: string[]) => string;
 const createChunk = (
-  compilation: Compilation,
-  chunkAssets: Chunk['auxiliaryFiles'],
-  tenantName: string,
-  id: string,
+  { compilation, auxiliaryFiles, tenantName, id }: ChunkHandler,
   assets: string[],
   ext: string,
   createSource: CreateSource,
-  targetExt = ext,
 ) => {
   const fileRegEx = new RegExp(`\\.${ext}(?:\\?.*)?$`, 'u');
-  const files = Array.from(chunkAssets).filter(
+  const files = Array.from(auxiliaryFiles).filter(
     (assetFile) => assetFile.startsWith(`assets/${tenantName}`) && fileRegEx.test(assetFile),
   );
 
   if (!files.length) {
-    return null;
+    return [];
   }
 
   const rawSource = createSource(compilation.assets, files);
-  const filePath = `assets/${tenantName}/${targetExt}/${id}.${targetExt}`;
+  const contentHash = createHash('sha256').update(rawSource).digest('hex');
+  const filePath = `assets/${tenantName}/${ext}/${id}_${contentHash}.${ext}`;
 
   assets.push(filePath);
   // TODO: type mismatch in both upstream repos and webpack doesnt export Source
@@ -32,7 +31,7 @@ const createChunk = (
     compilation.deleteAsset(file);
   });
 
-  return null;
+  return filePath;
 };
 
 export default createChunk;
