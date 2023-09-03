@@ -1,0 +1,20 @@
+{
+  "name": "@example/engine-browser",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.ts",
+  "devDependencies": {
+    "@dev/eslint": "1.0.0",
+    "@dev/typescript": "1.0.0",
+    "@example/app": "1.0.0",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "dependencies": {
+    "@loadable/component": "^5.15.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
