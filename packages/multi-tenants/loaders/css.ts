@@ -24,7 +24,7 @@ const cssLoader: LoaderDefinition<TenantOptions, DataContext> = function cssLoad
       if (messages.length) {
         this.getLogger().log(...messages);
       }
-      const { appDir, tenants } = options;
+      const { appDir, tenants, server } = options;
       const { src, dest } = await resolveToRelativeOverload(this, options);
       const classNames = encodeURIComponent(JSON.stringify(moduleMap));
 
@@ -56,12 +56,14 @@ const cssLoader: LoaderDefinition<TenantOptions, DataContext> = function cssLoad
         callback(
           null,
           [
-            imports,
+            !server && imports,
             `const imports = [];`,
-            collectImports.join(`\n`),
+            !server && collectImports.join(`\n`),
             `const moduleMap = ${JSON.stringify(moduleMap)};`,
             `export default moduleMap;`,
-          ].join('\n'),
+          ]
+            .filter(Boolean)
+            .join('\n'),
         );
       });
     });

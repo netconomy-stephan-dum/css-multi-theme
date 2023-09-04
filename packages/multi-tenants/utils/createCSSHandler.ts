@@ -22,7 +22,7 @@ const getDevAssets = (chunkData: ChunkHandler) => {
 
 const getProdAssets = (chunkData: ChunkHandler) => {
   const assets: string[] = [];
-  createChunk(chunkData, assets, 'css', createCSSChunk);
+  createChunk(chunkData, assets, 'css', createCSSChunk, true);
   return assets;
 };
 

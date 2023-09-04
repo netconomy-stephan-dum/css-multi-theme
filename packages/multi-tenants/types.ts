@@ -7,6 +7,7 @@ export interface TenantOptions {
   tenants: Record<string, string[]>;
   appDir: string;
   assetDir: string;
+  server: boolean;
 }
 
 export interface ChunkHandler {

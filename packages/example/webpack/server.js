@@ -6,7 +6,7 @@ const getTenantOptions = require('./getTenantOptions');
 const getBaseConfig = require('./base');
 const MultiTenantsPlugin = require('multi-tenants').default;
 
-const multiTenantPlugin = new MultiTenantsPlugin(getTenantOptions());
+const multiTenantPlugin = new MultiTenantsPlugin(getTenantOptions(true));
 
 const getServerConfig = async (env, options) => {
   const { WEBPACK_SERVE } = env;
@@ -32,27 +32,7 @@ const getServerConfig = async (env, options) => {
     },
     externalsType: 'commonjs',
     module: {
-      rules: [
-        ...config.module.rules,
-        ...multiTenantPlugin.getAssetRules(),
-        // {
-        //   test: /\.(c|s[ca])ss$/,
-        //   type: 'javascript/auto',
-        //   use: [
-        //     {
-        //       loader: require.resolve('css-loader'),
-        //       options: {
-        //         modules: {
-        //           exportOnlyLocals: true,
-        //         },
-        //       },
-        //     },
-        //     {
-        //       loader: require.resolve('postcss-loader'),
-        //     },
-        //   ],
-        // },
-      ],
+      rules: [...config.module.rules, ...multiTenantPlugin.getAssetRules()],
     },
     name: 'server',
     output: {

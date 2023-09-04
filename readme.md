@@ -10,38 +10,30 @@ Only use this plugin if an overload for every file is really needed. Most style 
 - enforce tenants to apply to the provided css module interface
 
 ## Example
-A complete example is located in [./packages/example](./example) with the main entry in [./packages/example/app](./example/app).
+A complete example is located in [./packages/example](./packages/example).
 
 First you need to define all tenants the build should include.
-All directories inside tenantDirs will be used from left to right to find a match overload.
+All directories inside tenant dirs will be used from left to right to find a match overload.
 If no overload is found the original base version is used.
 ````js
 
 const MultiTenantsWebpackPlugin = require("multi-tenants-webpack-plugin");
 
-/* this is the app only with default styles applied */
-const baseTenant = {
-  tenantName: 'base',
-  tenantDirs: [],
+const tenantOptions = {
+  appDir: path.dirname(require.resolve('@example/app/package.json')),
+  assetDir: 'assets',
+  maxInlineSize: 1024 * 3,
+  server: false,
+  tenants: {
+    /* this is the app only with default styles applied */
+    base: [],
+    light: [path.dirname(require.resolve('@example/tenant-light/package.json'))],
+    dark: [path.dirname(require.resolve('@example/tenant-dark/package.json'))],
+  }
 };
 
-const lightTenant = {
-  tenantName: 'light',
-  tenantDirs: [
-    path.dirname(require.resolve('@example/tenant-light/package.json'))
-  ],
-};
 
-const darkTenant = {
-  tenantName: 'dark',
-  tenantDirs: [
-    path.dirname(require.resolve('@example/tenant-dark/package.json'))
-  ]
-};
-
-const tenants = [darkTenant, lightTenant, baseTenant];
-
-const multiTenantsPlugin = new MultiTenantsWebpackPlugin(__dirname, 'assets', tenants);
+const multiTenantsPlugin = new MultiTenantsWebpackPlugin(tenantOptions);
 
 const svgPipeline = [
   {
@@ -76,25 +68,23 @@ const webpackConfig = {
 
 ````
 
-## example
+### example setup
 
 add following domains to your host file
 - base.localhost
 - dark.localhost
 - light.localhost
 
-execute `yarn start` to run all scripts and start the server
+execute `yarn dev` to run all scripts and start the server
 
-go to one of the addresses added to host file with approriate PORT (default is 8080)
+go to one of the addresses added to host file with approriate PORT (default is 8080 for csr and 8114 for ssr).
 
 ## Roadmap:
 - add stylelint
 - add static dir overload to plugin
-- sprite also for svg inside css url
 - rework options
   - split css in pre and post step
   - css post css plugins as options
-  - add inline loader maxFileSize as option
   - add custom spriteStringToObject 
 - prepare package.json for release
 
@@ -103,8 +93,6 @@ go to one of the addresses added to host file with approriate PORT (default is 8
 - make tenant optional optimize svg/css support for no tenant
 - inline loader add resolve with all possible image extensions to loader load ie svg with jpg
 - add warning if the ratio of the svg blueprint does not match the overloaded file viewbox ratio
-- optimize sprites by use an inline webpack build to detect how to distribute them
-  - the plugin can descide if inline makes sense ie if the distributed item is too small for a separate sprite
 - allow splitting into two process: 
   1. only do the js => write classNames to on big file
   2. only do the assets => imports asset file

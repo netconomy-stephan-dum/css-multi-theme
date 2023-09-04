@@ -5,7 +5,7 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 const MultiTenantsPlugin = require('multi-tenants').default;
 
-const multiTenantPlugin = new MultiTenantsPlugin(getTenantOptions());
+const multiTenantPlugin = new MultiTenantsPlugin(getTenantOptions(false));
 const getBrowserConfig = (env, options) => {
   const base = process.cwd();
   const dist = 'dist';

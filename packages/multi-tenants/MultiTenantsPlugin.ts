@@ -134,13 +134,14 @@ class MultiTenantsPlugin {
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
       compilation.hooks.processAssets.tapPromise(hookOptions, () => {
         const { chunks, assets } = compilation;
-        const { assetDir, tenants } = this.options;
-        const timeStamp = '_';
-        // const timeStamp = new Date().getTime();
-        debugger;
+        const { assetDir, tenants, server } = this.options;
+
         chunks.forEach(({ name, files }) => {
-          replaceSpriteName(files, `${name}_${timeStamp}`, assets, /\.js(\?.+)?$/u);
+          replaceSpriteName(files, `${name}_`, assets, /\.js(\?.+)?$/u);
         });
+        if (server) {
+          return Promise.resolve();
+        }
         const baseStats = compilation.getStats().toJson({
           all: false,
           assets: false,
@@ -179,7 +180,7 @@ class MultiTenantsPlugin {
               };
               const svgFiles: string[] = [];
 
-              createChunk(chunkData, svgFiles, 'svg', createSVGChunk, timeStamp.toString());
+              createChunk(chunkData, svgFiles, 'svg', createSVGChunk, false);
               const cssFiles = getAssets(chunkData);
 
               assetsByTenantChunkName[name] = [...cssFiles, ...svgFiles, ...Array.from(files)];

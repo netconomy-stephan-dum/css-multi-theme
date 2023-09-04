@@ -9,7 +9,7 @@ const svgLoader: LoaderDefinition<TenantOptions> = function svgLoader(source) {
   const options = this.getOptions();
 
   const iconName = path.basename(this.resourcePath, '.svg');
-  const { appDir, tenants } = options;
+  const { appDir, tenants, server } = options;
 
   resolveToRelativeOverload(this, options).then(({ src, dest }) =>
     Promise.all(
@@ -38,11 +38,13 @@ const svgLoader: LoaderDefinition<TenantOptions> = function svgLoader(source) {
       callback(
         null,
         [
-          `const imports = [${imports}];`,
+          !server && `const imports = [${imports}];`,
           // __sprite_name__ will be replaced by the plugin
           `const icon = ["__sprite_name__", "${iconName}", "${viewBox}"];`,
           `export default icon;`,
-        ].join('\n'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
       );
     }),
   );
