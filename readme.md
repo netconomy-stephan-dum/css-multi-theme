@@ -10,7 +10,7 @@ Only use this plugin if an overload for every file is really needed. Most style 
 - enforce tenants to apply to the provided css module interface
 
 ## Example
-A complete example is located in [./example](./example) with the main entry in [./example/app](./example/app).
+A complete example is located in [./packages/example](./example) with the main entry in [./packages/example/app](./example/app).
 
 First you need to define all tenants the build should include.
 All directories inside tenantDirs will be used from left to right to find a match overload.

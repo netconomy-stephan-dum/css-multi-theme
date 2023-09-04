@@ -1,19 +1,22 @@
 {
   "private": true,
-  "version": "1.0.0",
   "license": "MIT",
   "packageManager": "yarn@3.2.0",
   "workspaces": [
-    "example/*",
-    "dev/*",
-    "src"
+    "packages/**/*"
   ],
+  "devDependencies": {
+    "@example/webpack": "1.0.0",
+    "typescript": "5.2.2"
+  },
   "scripts": {
-    "dev": "yarn workspace @example/app dev",
+    "dev-example": "yarn workspace @example/app dev",
     "lint": "yarn workspaces foreach run lint",
-    "debug": "yarn workspace @example/app debug",
-    "serve": "yarn workspace @example/app http-server ./dist",
-    "start": "yarn dev && yarn serve",
-    "build-plugin": "yarn workspace @multi-tenants/webpack-plugin build"
+    "debug-webpack": "yarn workspace @example/app debug-webpack",
+    "debug-server": "yarn workspace @example/app debug-webpack",
+    "build": "yarn webpack build",
+    "build-plugin": "yarn workspace multi-tenants build",
+    "dev-plugin": "yarn workspace multi-tenants dev",
+    "dev": "yarn webpack serve"
   }
 }

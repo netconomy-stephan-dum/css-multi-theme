@@ -1,0 +1,7 @@
+{
+  "name": "@example/cli-utils",
+  "version": "1.0.0",
+  "dependencies": {
+    "cross-spawn": "^7.0.3"
+  }
+}
