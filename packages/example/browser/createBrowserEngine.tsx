@@ -34,11 +34,15 @@ const browserEngine = async (selector: string) => {
   if (!domElement) {
     throw new Error(`No DOM element '${selector}' found!`);
   }
-
+  const configContext = {
+    assetsByChunkName,
+    port: Number.parseInt(document.location.port, 10),
+    tenantName,
+  };
   const vDOM = (
     <React.StrictMode>
       <BrowserRouter>
-        <ConfigContext.Provider value={{ assetsByChunkName, tenantName }}>
+        <ConfigContext.Provider value={configContext}>
           <Layout>
             <Routes />
           </Layout>

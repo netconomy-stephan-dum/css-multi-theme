@@ -15,6 +15,7 @@ const devServerConfig = ({ PORT }) => {
       devMiddleware: {
         writeToDisk: true,
       },
+      historyApiFallback: true,
       host: `base.localhost`,
       hot: true,
       liveReload: false,

@@ -1,29 +1,32 @@
-import React, { FunctionComponent, ReactElement } from 'react';
+import React, { FunctionComponent, ReactElement, useContext } from 'react';
 import Icon from '../Icon';
 import logo from './logo.svg';
 import './variables.scss';
 import styles from './Layout.scss';
 import overloadStyle from './overloaderStyle.scss';
 import { Link } from 'react-router-dom';
+import ConfigContext from '../../ConfigContext';
 
-const naviData = [
-  {
-    href: 'http://base.localhost:8080',
-    text: 'base',
-  },
-  {
-    href: 'http://light.localhost:8080',
-    text: 'light',
-  },
-  {
-    href: 'http://dark.localhost:8080',
-    text: 'dark',
-  },
-];
 interface LayoutProps {
   children: ReactElement;
 }
 const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
+  const { port } = useContext(ConfigContext);
+
+  const naviData = [
+    {
+      href: `http://base.localhost:${port}`,
+      text: 'base',
+    },
+    {
+      href: `http://light.localhost:${port}`,
+      text: 'light',
+    },
+    {
+      href: `http://dark.localhost:${port}`,
+      text: 'dark',
+    },
+  ];
   return (
     <>
       <header className={`${styles.header} ${overloadStyle.header}`}>

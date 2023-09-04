@@ -187,7 +187,7 @@ class MultiTenantsPlugin {
               assignStats(statsFile, name, assetsByTenantChunkName[name], groupsIterable);
               const [svgSprite] = svgFiles;
               if (svgSprite) {
-                replaceSpriteName(cssFiles, svgSprite, assets);
+                replaceSpriteName(cssFiles, `/${svgSprite}`, assets);
               }
             });
 

@@ -26,7 +26,13 @@ const svgLoader: LoaderDefinition<TenantOptions> = function svgLoader(source) {
       ),
     ).then((filePaths) => {
       const svgPaths = Array.from(new Set(filePaths));
-      const imports = svgPaths.map((filePath) => `require('${filePath}').default`).join(',');
+      const collectImports: string[] = [];
+      const imports = svgPaths
+        .map((filePath, index) => {
+          collectImports.push(`imports.push(content_${index});`);
+          return `import content_${index} from '${filePath}'`;
+        })
+        .join('\n');
       const viewBoxMatch = /viewBox="(.*?)"/i.exec(source);
 
       if (!viewBoxMatch || viewBoxMatch.length < 2) {
@@ -38,7 +44,9 @@ const svgLoader: LoaderDefinition<TenantOptions> = function svgLoader(source) {
       callback(
         null,
         [
-          !server && `const imports = [${imports}];`,
+          !server && imports,
+          `const imports = [];`,
+          !server && collectImports.join(`\n`),
           // __sprite_name__ will be replaced by the plugin
           `const icon = ["__sprite_name__", "${iconName}", "${viewBox}"];`,
           `export default icon;`,

@@ -9,6 +9,7 @@ import React from 'react';
 import { ChunkExtractor } from '@loadable/server';
 import path from 'node:path';
 import { StaticRouter } from 'react-router-dom';
+import ConfigContext from '@example/app/ConfigContext';
 
 const PORT = 8114;
 const logger = console;
@@ -35,13 +36,18 @@ const createServer = () => {
 
     const html = reactDOM.renderToString(<HTMLIndex lang="de" title="someTitle" />);
 
+    const configContext = { assetsByChunkName, port: PORT, tenantName };
     const layout = reactDOM.renderToString(
       extractor.collectChunks(
-        <StaticRouter location={request.url}>
-          <Layout>
-            <Routes />
-          </Layout>
-        </StaticRouter>,
+        <React.StrictMode>
+          <ConfigContext.Provider value={configContext}>
+            <StaticRouter location={request.url}>
+              <Layout>
+                <Routes />
+              </Layout>
+            </StaticRouter>
+          </ConfigContext.Provider>
+        </React.StrictMode>,
       ),
     );
 
@@ -55,7 +61,7 @@ const createServer = () => {
   });
 
   return app.listen(PORT, () => {
-    logger.log(['server listening on:', `http://localhost:${PORT}`].join('\n'));
+    logger.log(['server listening on:', `http://base.localhost:${PORT}`].join('\n'));
   });
 };
 (async () => {

@@ -15,7 +15,6 @@ const getArgsByTask = {
     ...getConfigPaths(['devServer', ...defaultConfigNames]),
     '--progress',
     '--mode=development',
-    // '--mode=production',
   ],
 };
 
