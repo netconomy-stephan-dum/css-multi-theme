@@ -11,11 +11,13 @@ const activeAssets: Record<string, ActiveAsset> = {};
 const removeAssets = (assets: string[]) => {
   assets.forEach((rawAsset) => {
     const asset = activeAssets[rawAsset];
-    asset.usage -= 1;
+    if (asset) {
+      asset.usage -= 1;
 
-    if (asset.usage === 0) {
-      delete activeAssets[rawAsset];
-      document.head.removeChild(asset.node);
+      if (asset.usage === 0) {
+        delete activeAssets[rawAsset];
+        document.head.removeChild(asset.node);
+      }
     }
   });
 };

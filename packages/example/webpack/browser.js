@@ -14,7 +14,7 @@ const getBrowserConfig = (env, options) => {
 
   return Object.assign(baseConfig, {
     entry: {
-      browser: [require.resolve('@example/engine-browser')],
+      main: [require.resolve('@example/engine-browser')],
     },
     module: {
       rules: [...multiTenantPlugin.getAssetRules(), ...baseConfig.module.rules],

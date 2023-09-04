@@ -4,6 +4,7 @@ import logo from './logo.svg';
 import './variables.scss';
 import styles from './Layout.scss';
 import overloadStyle from './overloaderStyle.scss';
+import { Link } from 'react-router-dom';
 
 const naviData = [
   {
@@ -29,9 +30,9 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
         <nav>
           <ul>
             <li className={styles.logo}>
-              <a href="/">
+              <Link to="/">
                 <Icon glyph={logo} />
-              </a>
+              </Link>
             </li>
             {naviData.map(({ href, text }) => (
               <li key={href}>
@@ -48,7 +49,7 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
             <a href="https://icons8.com">All icons from Icons8.com</a>
           </li>
           <li>
-            <a href="/example/app/universal/pages/Imprint">Imprint</a>
+            <Link to="/imprint">Imprint</Link>
           </li>
         </ul>
       </footer>

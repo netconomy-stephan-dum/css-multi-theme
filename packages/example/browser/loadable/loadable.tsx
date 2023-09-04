@@ -1,24 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import loadableBase from '@loadable/component';
 import assetHandler from './AssetHandler';
+import ConfigContext from '@example/app/ConfigContext';
 
-const getAssets = (chunkName: string) => {
-  const { assetsByChunkName, tenantName } = window;
-
-  return [
-    ...(assetsByChunkName[chunkName] || []),
-    ...(assetsByChunkName[`${tenantName}-${chunkName}`] || []),
-  ];
-};
-
-const loadable = (options: unknown, chunkName: string) => {
-  // this happens at buildTime
+const loadable = (options: unknown) => {
+  // the props are changed at buildTime
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const Component = loadableBase(options, chunkName);
+  const chunkName = options.chunkName();
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const Component = loadableBase(options);
   const InnerLoadable = () => {
+    const { assetsByChunkName, tenantName } = useContext(ConfigContext);
+
     useEffect(() => {
-      const assets = getAssets(chunkName);
+      const assets = [
+        ...(assetsByChunkName[chunkName] || []),
+        ...(assetsByChunkName[`${tenantName}-${chunkName}`] || []),
+      ];
       assetHandler.loadAssets(assets);
       return () => {
         assetHandler.removeAssets(assets);

@@ -2,9 +2,7 @@ const path = require('node:path');
 
 const nodeExternals = require('webpack-node-externals');
 const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
-const getManifestSyncRule = require('multi-tenants/dist/rules/manifestSync').default;
 const getTenantOptions = require('./getTenantOptions');
-const WebpackStatsPlugin = require('@loadable/webpack-plugin');
 const getBaseConfig = require('./base');
 const MultiTenantsPlugin = require('multi-tenants').default;
 
@@ -19,16 +17,16 @@ const getServerConfig = async (env, options) => {
 
   Object.assign(config, {
     entry: {
-      server: [
+      main: [
         `${require.resolve('webpack/hot/poll')}?100`,
         require.resolve('@example/engine-server'),
       ],
     },
-    // externals: [
-    //   nodeExternals({
-    //     allowlist: ['webpack/hot/poll?100'],
-    //   }),
-    // ],
+    externals: [
+      nodeExternals({
+        allowlist: ['webpack/hot/poll?100', 'multi-tenants/manifestByTenant', /@example/],
+      }),
+    ],
     externalsPresets: {
       node: true,
     },
@@ -61,7 +59,7 @@ const getServerConfig = async (env, options) => {
       filename: './[name].js',
       path: path.join(base, dist, 'private'),
     },
-    plugins: [...config.plugins, new WebpackStatsPlugin()],
+    plugins: [...config.plugins, multiTenantPlugin],
     target: 'node',
   });
 
@@ -69,7 +67,7 @@ const getServerConfig = async (env, options) => {
     config.plugins.push(
       new RunScriptWebpackPlugin({
         autoRestart: false,
-        name: './server.js',
+        name: './main.js',
         nodeArgs: ['--inspect'],
       }),
     );

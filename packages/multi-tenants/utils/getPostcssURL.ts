@@ -54,7 +54,7 @@ const getPostcssURL = (context: LoaderContext<TenantOptions>, options: TenantOpt
                 readFile(overloadPath, 'utf-8').then((source) => {
                   if (source.length > options.maxInlineSize || DEFAULT_MAX_INLINE_SIZE) {
                     const iconName = path.basename(overloadPath, '.svg');
-                    const publicPath = `/assets/${tenantName}/svg/${iconName}.svg`;
+                    const publicPath = `assets/${tenantName}/svg/${iconName}.svg`;
                     context.emitFile(publicPath, source);
                     const hash = createHash('sha256').update(source).digest('hex').slice(0, 8);
                     resolve(`"__sprite_name__?${hash}#${iconName}"`);

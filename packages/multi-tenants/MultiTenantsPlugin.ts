@@ -135,7 +135,9 @@ class MultiTenantsPlugin {
       compilation.hooks.processAssets.tapPromise(hookOptions, () => {
         const { chunks, assets } = compilation;
         const { assetDir, tenants } = this.options;
-        const timeStamp = new Date().getTime();
+        const timeStamp = '_';
+        // const timeStamp = new Date().getTime();
+        debugger;
         chunks.forEach(({ name, files }) => {
           replaceSpriteName(files, `${name}_${timeStamp}`, assets, /\.js(\?.+)?$/u);
         });
@@ -163,7 +165,6 @@ class MultiTenantsPlugin {
               namedChunkGroups: {},
             } as StatsFile;
 
-            debugger;
             chunks.forEach(({ name, auxiliaryFiles, files, groupsIterable }) => {
               if (!name) {
                 return;

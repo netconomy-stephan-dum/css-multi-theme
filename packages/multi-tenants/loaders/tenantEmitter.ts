@@ -13,10 +13,10 @@ const getFilePath = (resourceQuery: string, assetDir: string, contentHash: strin
     const base = segments.pop();
     segments.push(`${base}_${contentHash}.${ext}`);
 
-    return `/${assetDir}/${segments.join('.')}`;
+    return `${assetDir}/${segments.join('.')}`;
   }
 
-  return `/${assetDir}/${dest}`;
+  return `${assetDir}/${dest}`;
 };
 const tenantEmitterLoader: LoaderDefinition<TenantOptions> = function tenantEmitterLoader(
   rawSource,

@@ -34,7 +34,6 @@ const svgLoader: LoaderDefinition<TenantOptions> = function svgLoader(source) {
       }
 
       const [, viewBox] = viewBoxMatch;
-      // const basePath = process.env.NODE_ENV === 'production' ? '__sprite_name__' : `svg/${dest}`;
 
       callback(
         null,

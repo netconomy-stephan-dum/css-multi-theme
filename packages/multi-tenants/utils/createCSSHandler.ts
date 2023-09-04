@@ -11,7 +11,7 @@ const filterExt = (
 ) =>
   Array.from(auxiliaryFiles).filter(
     (assetFile) =>
-      assetFile.startsWith(`/${assetPath}/${tenantName}`) &&
+      assetFile.startsWith(`${assetPath}/${tenantName}`) &&
       new RegExp(`\\.${ext}(?:\\?.*)?$`).test(assetFile),
   );
 

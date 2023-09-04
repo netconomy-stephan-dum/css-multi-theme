@@ -5,6 +5,12 @@ const devServerConfig = ({ PORT }) => {
       bonjour: false,
       client: {
         overlay: false,
+        webSocketURL: {
+          hostname: '0.0.0.0',
+          pathname: '/ws',
+          port: PORT,
+          protocol: 'ws',
+        },
       },
       devMiddleware: {
         writeToDisk: true,

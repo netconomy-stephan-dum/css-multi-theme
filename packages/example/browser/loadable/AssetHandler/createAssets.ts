@@ -7,29 +7,6 @@ const assetTypes: Record<string, AssetHandler> = {
       rel: 'stylesheet',
     });
   },
-  // mjs: (src) => {
-  //   return Object.assign(document.createElement('script'), {
-  //     type: 'module',
-  //     src: '/' + src,
-  //   });
-  // },
-  // js: (src) => {
-  //   return Object.assign(document.createElement('script'), {
-  //     async: true,
-  //     src: '/' + src.replace(/\.mjs$/, '.js'),
-  //   });
-  // },
-  // jsm: (src) => {
-  //   return assetTypes.mjs(src.replace(/\.jsm$/, '.mjs'),)
-  // },
-  // svg: (href) => {
-  //   return Object.assign(document.createElement('link'), {
-  //     as: 'image',
-  //     href,
-  //     rel: 'preload',
-  //     type: 'image/svg+xml',
-  //   });
-  // },
 };
 
 const createAsset = (asset: string) => {
@@ -41,7 +18,6 @@ const createAsset = (asset: string) => {
     }
   }
   return null;
-  // throw new ReferenceError(`No file extension given for ${asset}`);
 };
 
 export default createAsset;

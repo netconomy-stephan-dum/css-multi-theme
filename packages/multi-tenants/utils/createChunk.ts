@@ -13,9 +13,9 @@ const createChunk = (
 ) => {
   const fileRegEx = new RegExp(`\\.${ext}(?:\\?.*)?$`, 'u');
   const files = Array.from(auxiliaryFiles).filter(
-    (assetFile) => assetFile.startsWith(`/assets/${tenantName}`) && fileRegEx.test(assetFile),
+    (assetFile) => assetFile.startsWith(`assets/${tenantName}`) && fileRegEx.test(assetFile),
   );
-  debugger;
+
   if (!files.length) {
     return [];
   }
