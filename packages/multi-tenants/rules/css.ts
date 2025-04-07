@@ -9,9 +9,9 @@ import createPostCSSOptions from '../utils/createPostCSSOptions';
  * emit separate scss file for each tenant
  */
 const getTenantEmitter = (options: TenantOptions, use: UseOption) => ({
-  issuerLayer: '',
+  issuerLayer: 'root',
   layer: 'collect-css',
-  test: /\.scss$/,
+  test: /\.s?css$/,
   type: 'javascript/auto',
   use: [
     {
@@ -40,16 +40,15 @@ interface GeneratorRuleSetRule extends Exclude<RuleSetRule, 'generator'> {
 const injectHotCSS = (linkPath: string) => {
   if (module.hot) {
     const getChangedElement = () => {
-      const doc = document;
-      const path = linkPath.replace(doc.location.origin, '').replace(/(_.*?)?\.css/, '');
-      const elem = doc.querySelector<HTMLLinkElement>(`link[href^="${path}"]`);
+      const path = linkPath.replace(document.location.origin, '').replace(/(_.*?)?\.css/, '');
+      const elem = document.querySelector<HTMLLinkElement>(`link[href^="${path}"]`);
 
       return elem || ({} as HTMLLinkElement);
     };
     // will be replaced later when used
     module.hot.accept('__module_path__', () => {
       if (typeof window !== 'undefined') {
-        getChangedElement().href = linkPath;
+        getChangedElement().href = `${linkPath}`;
       }
     });
 
@@ -73,7 +72,7 @@ const getInjectHotCSS = (modulePath: string) =>
 
 const getStylePipeline = (options: TenantOptions, use: UseOption): GeneratorRuleSetRule => ({
   issuerLayer: 'collect-css',
-  test: /\.scss$/,
+  test: /\.s?css$/,
   type: 'javascript/auto',
   use: [
     {
@@ -83,7 +82,7 @@ const getStylePipeline = (options: TenantOptions, use: UseOption): GeneratorRule
       },
     },
     {
-      loader: require.resolve('../loaders/tenantEmitter'),
+      loader: require.resolve('../loaders/assetEmitter'),
       options,
     },
     {
@@ -115,6 +114,7 @@ const getAssetPipelines = (options: TenantOptions) => [
     type: 'asset',
   },
 ];
+
 const getCSSRules = (options: TenantOptions, use: UseOption) => [
   getTenantEmitter(options, use),
   getStylePipeline(options, use),

@@ -1,0 +1,15 @@
+{
+  "name": "@example/rspack",
+  "version": "1.0.0",
+  "bin": "./cli.mjs",
+  "dependencies": {
+    "@example/runtime-browser": "1.0.0",
+    "@example/runtime-server": "1.0.0",
+    "@rspack/cli": "1.2.8",
+    "@rspack/core": "1.2.8",
+    "@rspack/plugin-react-refresh": "1.0.0",
+    "@swc/plugin-loadable-components": "5.0.3",
+    "react-refresh": "0.14.2",
+    "webpack-node-externals": "3.0.0"
+  }
+}

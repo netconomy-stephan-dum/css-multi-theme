@@ -12,7 +12,7 @@ const getArgsByTask = {
   build: () => ['build', ...getConfigPaths(defaultConfigNames), '--progress'],
   serve: () => [
     'serve',
-    ...getConfigPaths(['devServer', ...defaultConfigNames]),
+    ...getConfigPaths(['devServer', ...defaultConfigNames, 'runServer']),
     '--progress',
     '--mode=development',
   ],
@@ -27,11 +27,13 @@ const getDebugFlag = (debug) => {
   }
   return debug;
 };
+
 const spawnWebpack = async (task, options, command) => {
   const { debug } = options;
   const webpackBin = (
     await promiseSpawn('yarn', ['bin', 'webpack-cli'], { cwd: __dirname })
   ).trim();
+
   const nodeArgs = [];
 
   const debugFlag = getDebugFlag(debug);

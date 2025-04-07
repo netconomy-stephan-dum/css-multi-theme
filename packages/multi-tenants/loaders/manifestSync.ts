@@ -12,7 +12,7 @@ const manifestSyncLoader: LoaderDefinition<TenantOptions> = function manifestSyn
   const { appDir, tenants, assetDir } = this.getOptions();
   const manifestByTenant: Record<string, string> = {};
   return Promise.all(
-    Object.keys(tenants).map((tenantName) => {
+    tenants.map((tenantName) => {
       const publicPath = `/${assetDir}/${tenantName}/assetsByChunkName.mjs`;
       const assetByChunkNamePath = `${appDir}/dist${publicPath}`;
       manifestByTenant[tenantName] = publicPath;

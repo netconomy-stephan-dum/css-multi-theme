@@ -8,7 +8,7 @@ interface IConfigContext {
 
 const ConfigContext = createContext<IConfigContext>({
   assetsByChunkName: {},
-  port: 8080,
+  port: 8114,
   tenantName: 'base',
 });
 

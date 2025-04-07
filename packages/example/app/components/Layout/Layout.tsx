@@ -1,9 +1,8 @@
 import React, { FunctionComponent, ReactElement, useContext } from 'react';
 import Icon from '../Icon';
-import logo from './logo.svg';
-import './variables.scss';
-import styles from './Layout.scss';
-import overloadStyle from './overloaderStyle.scss';
+import logo from './images/logo.svg';
+import './styles/variables.scss';
+import styles from './styles/Layout.scss';
 import { Link } from 'react-router-dom';
 import ConfigContext from '../../ConfigContext';
 
@@ -29,7 +28,7 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }) => {
   ];
   return (
     <>
-      <header className={`${styles.header} ${overloadStyle.header}`}>
+      <header className={`${styles.header}`}>
         <nav>
           <ul>
             <li className={styles.logo}>

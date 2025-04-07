@@ -1,0 +1,8 @@
+{
+  "name": "@example/runtime-browser",
+  "version": "1.0.0",
+  "main": "./browser.tsx",
+  "devDependencies": {
+    "@dev/typescript": "1.0.0"
+  }
+}

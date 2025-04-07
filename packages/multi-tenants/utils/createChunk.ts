@@ -21,7 +21,10 @@ const createChunk = (
   }
 
   const rawSource = createSource(compilation.assets, files);
-  const contentHash = shouldHash ? createHash('sha256').update(rawSource).digest('hex').slice(0, 8) : '';
+  const contentHash = shouldHash
+    ? createHash('sha256').update(rawSource).digest('hex').slice(0, 8)
+    : '';
+
   const filePath = `assets/${tenantName}/${ext}/${id}_${contentHash}.${ext}`;
 
   assets.push(filePath);

@@ -1,8 +1,8 @@
 import React from 'react';
-import loadable from '@example/engine-browser/loadable';
+import loadable from 'multi-tenants/loadable';
 import { Route, Switch } from 'react-router';
 
-const Home = loadable(() => import(/* webpackChunkName: "Home"*/ './pages/Home'));
+const Home = loadable(() => import(/* webpackChunkName: "Home" */ './pages/Home'));
 const Imprint = loadable(() => import(/* webpackChunkName: "Imprint" */ './pages/Imprint'));
 
 const Routes = () => (

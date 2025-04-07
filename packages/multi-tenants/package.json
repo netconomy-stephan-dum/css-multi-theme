@@ -8,12 +8,11 @@
     "@types/postcss-modules-local-by-default": "4.0.0",
     "@types/postcss-modules-scope": "^3.0.1",
     "@types/postcss-url": "^10.0.0",
-    "@types/webpack": "^5.28.1",
     "@types/webpack-env": "^1.18.0",
     "@types/webpack-sources": "^3.2.0",
     "ts-loader": "^9.4.2",
     "typescript": "5.2.2",
-    "webpack": "^5.77.0"
+    "webpack": "5.97.1"
   },
   "main": "./dist/index.js",
   "source": "index.ts",

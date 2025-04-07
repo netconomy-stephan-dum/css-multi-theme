@@ -1,9 +1,9 @@
 import React, { FunctionComponent, useEffect } from 'react';
 
 import Slider from '../../components/Slider';
+import Some from './components/Some';
 
-import style from './Home.scss';
-import Some from './Some';
+import style from './styles/Home.scss';
 
 const Home: FunctionComponent = () => {
   useEffect(() => {

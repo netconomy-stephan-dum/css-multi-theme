@@ -5,7 +5,7 @@
     "target": "es2019",
     "module": "commonjs",
     "sourceMap": false,
-
+    "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "allowJs": true,

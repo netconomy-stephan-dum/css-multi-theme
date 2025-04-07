@@ -1,4 +1,4 @@
-import { Compilation, Compiler, Chunk } from 'webpack';
+import { Compilation, Compiler } from 'webpack';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { TenantOptions, UseOption } from './types';
 import { RawSource, Source } from 'webpack-sources';
@@ -11,6 +11,7 @@ import getManifestSyncRule from './rules/manifestSync';
 import createCSSHandler from './utils/createCSSHandler';
 
 const pluginName = 'MultiTenantsWebpackPlugin';
+
 interface GlobalOptions {
   svg?: UseOption;
   css?: UseOption;
@@ -20,6 +21,7 @@ const hookOptions = {
   name: pluginName,
   stage: Compilation.PROCESS_ASSETS_STAGE_DERIVED,
 };
+
 const replaceSpriteName = (
   files: string[] | Set<string>,
   spriteName: string,
@@ -27,7 +29,7 @@ const replaceSpriteName = (
   regExp?: RegExp,
 ) => {
   files.forEach((chunkFile) => {
-    // only replace __sprite_name__ in js files css files will be handelt per tenant
+    // only replace __sprite_name__ in js files css files will be handled per tenant
     if (!regExp || regExp.test(chunkFile)) {
       (assets[chunkFile] as Source) = new RawSource(
         assets[chunkFile]
@@ -63,40 +65,7 @@ interface StatsFile {
   assets: { name: string }[];
 }
 
-interface ChunkGroup {
-  name?: string;
-  id: string | number;
-  options: {
-    prefetchOrder?: number;
-    preloadOrder?: number;
-  };
-  parentsIterable: Set<ChunkGroup>;
-}
-const addPreloaderOrPrefetch = (
-  statsFile: StatsFile,
-  group: ChunkGroup,
-  prop: 'prefetch' | 'preload',
-  files: string[],
-  name: string,
-) => {
-  if (`${prop}Order` in group.options) {
-    group.parentsIterable.forEach((parent) => {
-      const parentAsstes = statsFile.namedChunkGroups[parent.name || parent.id].childAssets;
-      parentAsstes[prop] ||= [];
-      (parentAsstes[prop] as PrefetchOrPreload[]).push({
-        assets: Array.from(files).map((filePath) => ({ name: filePath })),
-        chunks: [name],
-        name,
-      });
-    });
-  }
-};
-const assignStats = (
-  statsFile: StatsFile,
-  name: string,
-  files: string[],
-  groupsIterable: Chunk['groupsIterable'],
-) => {
+const assignStats = (statsFile: StatsFile, name: string, files: string[]) => {
   statsFile.chunks.push({ files, id: name });
   const statsAssets = files.map((filePath) => ({ name: filePath }));
   statsFile.assets.push(...statsAssets);
@@ -106,11 +75,6 @@ const assignStats = (
     chunks: [name],
     name,
   };
-
-  Array.from(groupsIterable).forEach((group) => {
-    addPreloaderOrPrefetch(statsFile, group, 'prefetch', files, name);
-    addPreloaderOrPrefetch(statsFile, group, 'preload', files, name);
-  });
 };
 
 class MultiTenantsPlugin {
@@ -139,9 +103,11 @@ class MultiTenantsPlugin {
         chunks.forEach(({ name, files }) => {
           replaceSpriteName(files, `${name}_`, assets, /\.js(\?.+)?$/u);
         });
+
         if (server) {
           return Promise.resolve();
         }
+
         const baseStats = compilation.getStats().toJson({
           all: false,
           assets: false,
@@ -156,7 +122,7 @@ class MultiTenantsPlugin {
         });
 
         return Promise.all(
-          Object.keys(tenants).map((tenantName) => {
+          tenants.map((tenantName) => {
             const assetsByTenantChunkName: Record<string, string[]> = {};
 
             const statsFile = {
@@ -184,7 +150,7 @@ class MultiTenantsPlugin {
               const cssFiles = getAssets(chunkData);
 
               assetsByTenantChunkName[name] = [...cssFiles, ...svgFiles, ...Array.from(files)];
-              assignStats(statsFile, name, assetsByTenantChunkName[name], groupsIterable);
+              assignStats(statsFile, name, assetsByTenantChunkName[name]);
               const [svgSprite] = svgFiles;
               if (svgSprite) {
                 replaceSpriteName(cssFiles, `/${svgSprite}`, assets);
@@ -201,7 +167,7 @@ class MultiTenantsPlugin {
             ].join('\n');
 
             // file is written directly to allow hmr without initial resync
-            const assetFilePath = `./dist/${assetDir}/${tenantName}/assetsByChunkName.mjs`;
+            const assetFilePath = `./dist/public/${assetDir}/${tenantName}/assetsByChunkName.mjs`;
             return mkdir(path.dirname(assetFilePath), { recursive: true }).then(() =>
               writeFile(assetFilePath, assetsByChunkNameModule.toString(), { encoding: 'utf-8' }),
             );

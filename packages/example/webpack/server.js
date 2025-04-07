@@ -13,20 +13,23 @@ const getServerConfig = async (env, options) => {
   const base = process.cwd();
   const dist = 'dist';
 
-  const config = await getBaseConfig(env, options);
+  const config = await getBaseConfig(env, { options, target: 'node' });
 
   Object.assign(config, {
     entry: {
-      main: [
-        `${require.resolve('webpack/hot/poll')}?100`,
-        require.resolve('@example/engine-server'),
-      ],
+      main: {
+        import: [
+          // `${require.resolve('webpack/hot/poll')}?100`,
+          require.resolve('@example/runtime-server'),
+        ],
+        layer: 'root',
+      },
     },
-    externals: [
-      nodeExternals({
-        allowlist: ['webpack/hot/poll?100', 'multi-tenants/manifestByTenant', /@example/],
-      }),
-    ],
+    // externals: [
+    //   nodeExternals({
+    //     allowlist: ['webpack/hot/poll?100', 'multi-tenants/manifestByTenant', /@example/],
+    //   }),
+    // ],
     externalsPresets: {
       node: true,
     },
@@ -42,16 +45,6 @@ const getServerConfig = async (env, options) => {
     plugins: [...config.plugins, multiTenantPlugin],
     target: 'node',
   });
-
-  if (WEBPACK_SERVE) {
-    config.plugins.push(
-      new RunScriptWebpackPlugin({
-        autoRestart: false,
-        name: './main.js',
-        nodeArgs: ['--inspect'],
-      }),
-    );
-  }
 
   return config;
 };

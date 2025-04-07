@@ -4,7 +4,7 @@ export type UseOption = webpack.RuleSetUseItem[];
 
 export interface TenantOptions {
   maxInlineSize: number;
-  tenants: Record<string, string[]>;
+  tenants: string[];
   appDir: string;
   assetDir: string;
   server: boolean;

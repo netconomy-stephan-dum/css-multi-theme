@@ -5,11 +5,7 @@ const getTenantOptions = (server = false) => ({
   assetDir: 'assets',
   maxInlineSize: 1024 * 3,
   server,
-  tenants: {
-    base: [],
-    dark: [path.dirname(require.resolve('@example/tenant-dark/package.json'))],
-    light: [path.dirname(require.resolve('@example/tenant-light/package.json'))],
-  },
+  tenants: ['base', 'dark', 'light'],
 });
 
 module.exports = getTenantOptions;

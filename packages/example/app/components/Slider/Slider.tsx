@@ -1,7 +1,7 @@
 import React, { ReactNode, FunctionComponent } from 'react';
 import classNames from 'classNames';
 
-import styles from './Slider.scss';
+import styles from './styles/Slider.scss';
 
 interface SliderProps {
   className?: string;
@@ -9,11 +9,7 @@ interface SliderProps {
 }
 
 const Slider: FunctionComponent<SliderProps> = ({ children, className }) => {
-  return (
-    <div className={classNames(className, styles.wrapper)}>
-      {children}
-    </div>
-  )
+  return <div className={classNames(className, styles.wrapper)}>{children}</div>;
 };
 
 export default Slider;

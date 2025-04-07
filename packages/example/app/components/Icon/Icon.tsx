@@ -15,7 +15,7 @@ interface IconProps {
 }
 
 const spriteStringToObject = (tenantName: string, [chunkName, hash, viewBox]: RawGlyph): Glyph => {
-  // TODO: read width & height from svg attribute instead
+  // TODO: read width & height from svg attribute instead?!
   const [, , width, height] = viewBox.split(' ');
   return {
     height,
@@ -26,7 +26,6 @@ const spriteStringToObject = (tenantName: string, [chunkName, hash, viewBox]: Ra
   };
 };
 
-// TODO: use React context instead of window.tenantName
 const useTenant = () => useContext(ConfigContext).tenantName;
 const Icon: FunctionComponent<IconProps> = ({ glyph }) => {
   const tenantName = useTenant();

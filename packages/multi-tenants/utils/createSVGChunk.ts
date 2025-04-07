@@ -8,9 +8,9 @@ const svgTemplate = readFileSync(
 );
 const createSVGChunk = (assets: Compilation['assets'], filePaths: string[]) => {
   const symbols: string[] = [];
+  const usages: string[] = [];
 
   // sort is need to keep contentHash stable
-  const usages: string[] = [];
   filePaths.sort().forEach((filePath) => {
     const [id] = path.basename(filePath, '.svg').split('_');
 

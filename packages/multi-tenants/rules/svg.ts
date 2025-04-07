@@ -40,11 +40,11 @@ const getSVGRules = (options: TenantOptions, use: UseOption) => [
    * Svg imported by javascript from app logic
    * emit separate svg file for each tenant
    * insert symbol #id and viewport
-   * sprite_name handled in plugin
+   * __sprite_name__ handled in plugin
    */
   {
     issuer: /\.[jt]sx?$/,
-    issuerLayer: '',
+    issuerLayer: 'root',
     layer: 'svg-collect',
     test: /svg$/,
     type: 'javascript/auto',
@@ -61,7 +61,7 @@ const getSVGRules = (options: TenantOptions, use: UseOption) => [
    */
   {
     issuerLayer: 'svg-collect',
-    test: /svg$/,
+    test: /\.svg$/,
     type: 'javascript/auto',
     use: [
       {
@@ -71,7 +71,7 @@ const getSVGRules = (options: TenantOptions, use: UseOption) => [
         },
       },
       {
-        loader: require.resolve('../loaders/tenantEmitter'),
+        loader: require.resolve('../loaders/assetEmitter'),
         options,
       },
       ...use,

@@ -1,20 +1,24 @@
 const path = require('node:path');
-const getBaseConfig = require('./base');
-const getTenantOptions = require('./getTenantOptions');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 
+const getBaseConfig = require('./base');
+const getTenantOptions = require('./getTenantOptions');
 const MultiTenantsPlugin = require('multi-tenants').default;
+const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const multiTenantPlugin = new MultiTenantsPlugin(getTenantOptions(false));
-const getBrowserConfig = (env, options) => {
+const getBrowserConfig = async (env, options) => {
   const base = process.cwd();
-  const dist = 'dist';
+  const dist = 'dist/public';
   const name = 'browser';
-  const baseConfig = getBaseConfig(env, options);
+  const baseConfig = await getBaseConfig(env, { ...options, target: 'web' });
 
   return Object.assign(baseConfig, {
     entry: {
-      main: [require.resolve('@example/engine-browser')],
+      main: {
+        import: [require.resolve('@example/runtime-browser')],
+        layer: 'root',
+      },
     },
     module: {
       rules: [...multiTenantPlugin.getAssetRules(), ...baseConfig.module.rules],
@@ -27,6 +31,7 @@ const getBrowserConfig = (env, options) => {
     },
     plugins: [
       ...baseConfig.plugins,
+      new ReactRefreshPlugin(),
       multiTenantPlugin,
       new HTMLWebpackPlugin({
         filename: 'index.html',
