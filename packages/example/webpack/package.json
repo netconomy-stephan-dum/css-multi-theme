@@ -10,7 +10,7 @@
     "cross-spawn": "^7.0.3",
     "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.3",
-    "multi-tenants": "1.0.0",
+    "multi-tenant-plugin": "0.0.1",
     "postcss": "^8.4.29",
     "postcss-loader": "^7.3.3",
     "run-script-webpack-plugin": "0.2.0",

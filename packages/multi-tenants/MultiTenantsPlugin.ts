@@ -84,11 +84,11 @@ class MultiTenantsPlugin {
     this.options = options;
   }
 
-  getAssetRules(use: GlobalOptions = {}) {
+  getAssetRules(issuerLayer: string, use: GlobalOptions = {}) {
     return [
       getManifestSyncRule(this.options),
-      ...getSVGRules(this.options, use.svg || []),
-      ...getCSSRules(this.options, use.css || []),
+      ...getSVGRules(this.options, use.svg || [], issuerLayer),
+      ...getCSSRules(this.options, use.css || [], issuerLayer),
     ];
   }
 
@@ -132,7 +132,7 @@ class MultiTenantsPlugin {
               namedChunkGroups: {},
             } as StatsFile;
 
-            chunks.forEach(({ name, auxiliaryFiles, files, groupsIterable }) => {
+            chunks.forEach(({ name, auxiliaryFiles, files }) => {
               if (!name) {
                 return;
               }

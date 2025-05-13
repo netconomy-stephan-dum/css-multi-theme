@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import loadable from 'multi-tenants/loadable';
+import loadable from 'multi-tenant-plugin/loadable';
 import styles from './Other.scss';
 
 const Lazy = loadable(() => import(/* webpackChunkName:"Lazy" */ './components/Lazy'));

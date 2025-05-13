@@ -10,10 +10,13 @@
   },
   "scripts": {
     "lint": "yarn workspaces foreach run lint",
-    "build": "yarn webpack build",
-    "build-plugin": "yarn workspace multi-tenants build",
-    "dev-plugin": "yarn workspace multi-tenants dev",
-    "dev": "yarn webpack serve",
+    "build-webpack": "yarn workspace @example/app webpack build",
+    "build-rspack": "yarn workspace @example/app rspack build",
+    "start": "cd ./packages/example/app && node ./dist/private/main.js",
+    "build-plugin": "yarn workspace multi-tenant-plugin build",
+    "dev-plugin": "yarn workspace multi-tenant-plugin dev",
+    "dev-webpack": "yarn workspace @example/app webpack serve",
+    "dev-rspack": "yarn workspace @example/app rspack serve",
     "dev-debug": "yarn webpack serve --debug"
   }
 }

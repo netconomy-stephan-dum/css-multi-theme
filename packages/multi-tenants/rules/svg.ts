@@ -35,7 +35,7 @@ const getInjectHot = (modulePath: string) =>
     .join('\n')
     .replace(/__module_path__/g, modulePath);
 
-const getSVGRules = (options: TenantOptions, use: UseOption) => [
+const getSVGRules = (options: TenantOptions, use: UseOption, issuerLayer: string) => [
   /*
    * Svg imported by javascript from app logic
    * emit separate svg file for each tenant
@@ -44,7 +44,7 @@ const getSVGRules = (options: TenantOptions, use: UseOption) => [
    */
   {
     issuer: /\.[jt]sx?$/,
-    issuerLayer: 'root',
+    issuerLayer,
     layer: 'svg-collect',
     test: /svg$/,
     type: 'javascript/auto',

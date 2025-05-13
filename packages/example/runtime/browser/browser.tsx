@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { loadableReady } from '@loadable/component';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import ConfigContext from '@example/app/ConfigContext';
-import prepareAssetsByChunkName from 'multi-tenants/prepareAssetsByChunkName';
+import prepareAssetsByChunkName from 'multi-tenant-plugin/prepareAssetsByChunkName';
 
 const createBrowserRuntime = async (selector: string) => {
   const [tenantName] = document.location.hostname.split('.');

@@ -18,7 +18,7 @@ const prepareAssetsByChunkName = async (tenantName: string, port: number) => {
 
   if (module.hot) {
     module.hot.accept();
-    module.hot.accept('multi-tenants/manifestByTenant', () => {
+    module.hot.accept('multi-tenant-plugin/manifestByTenant', () => {
       return updateAssetsByTenant();
     });
   }

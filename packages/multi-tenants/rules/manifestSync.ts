@@ -1,7 +1,7 @@
 import { TenantOptions } from '../types';
 
 const getAssetSyncRule = (options: TenantOptions) => ({
-  // only apply if manifest from @multi-tenant/webpack-plugin/manifest.json was imported
+  // only apply if manifest from @multi-tenant-plugin/manifest.json was imported
   // include: [path.dirname(__dirname)],
   test: /manifestByTenant\.ts$/,
   type: 'javascript/auto',

@@ -3,7 +3,7 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 const getBaseConfig = require('./base');
 const getTenantOptions = require('./getTenantOptions');
-const MultiTenantsPlugin = require('multi-tenants').default;
+const MultiTenantsPlugin = require('multi-tenant-plugin').default;
 const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const multiTenantPlugin = new MultiTenantsPlugin(getTenantOptions(false));
@@ -21,7 +21,7 @@ const getBrowserConfig = async (env, options) => {
       },
     },
     module: {
-      rules: [...multiTenantPlugin.getAssetRules(), ...baseConfig.module.rules],
+      rules: [...multiTenantPlugin.getAssetRules('root'), ...baseConfig.module.rules],
     },
     name,
     output: {

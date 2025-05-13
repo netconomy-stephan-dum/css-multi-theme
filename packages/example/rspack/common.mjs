@@ -38,7 +38,7 @@ const getCommonConfig = async (env, { target }) => {
                   {
                     signatures: [
                       {
-                        from: 'multi-tenants/loadable',
+                        from: 'multi-tenant-plugin/loadable',
                         name: 'default',
                       },
                     ]

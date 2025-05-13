@@ -1,4 +1,4 @@
-# multi-tenants-webpack-plugin
+# multi-tenant-plugin
 
 The plugin emits individual *css* and *svg* assets for each added tenant in the same build.
 
@@ -17,19 +17,14 @@ All directories inside tenant dirs will be used from left to right to find a mat
 If no overload is found the original base version is used.
 ````js
 
-const MultiTenantsWebpackPlugin = require("multi-tenants-webpack-plugin");
+const MultiTenantsWebpackPlugin = require("multi-tenant-plugin");
 
 const tenantOptions = {
   appDir: path.dirname(require.resolve('@example/app/package.json')),
   assetDir: 'assets',
   maxInlineSize: 1024 * 3,
   server: false,
-  tenants: {
-    /* this is the app only with default styles applied */
-    base: [],
-    light: [path.dirname(require.resolve('@example/tenant-light/package.json'))],
-    dark: [path.dirname(require.resolve('@example/tenant-dark/package.json'))],
-  }
+  tenants: ['base', 'dark', 'light'],
 };
 
 
@@ -52,15 +47,24 @@ const svgPipeline = [
 const scssPipeline = [require.resolve('sass-loader')];
 
 const webpackConfig = {
+  entry: {
+    main: {
+      import: './some/file.js',
+      layer: 'root'
+    }
+  },
   experiments: {
     layers: true,
   },
   module: {
     rules: [
-      ...multiTenantsPlugin.getAssetRules({
-        css: scssPipeline,
-        svg: svgPipeline,
-      })
+      ...multiTenantsPlugin.getAssetRules(
+        {
+            css: scssPipeline,
+            svg: svgPipeline,
+        },
+        'root'
+      )
     ],
   },
   plugins: [multiTenantsPlugin],
@@ -75,24 +79,6 @@ add following domains to your host file
 - dark.localhost
 - light.localhost
 
-execute `yarn dev` to run all scripts and start the server
+execute `yarn dev-webpack` to run all scripts and start the server
 
-go to one of the addresses added to host file with approriate PORT (default is 8080 for csr and 8114 for ssr).
-
-## Roadmap:
-- add stylelint
-- add static dir overload to plugin
-- rework options
-  - split css in pre and post step
-  - css post css plugins as options
-  - add custom spriteStringToObject 
-- prepare package.json for release
-
-## v2
-- use a javascript parser as starting point to avoid loading the file and not using it
-- make tenant optional optimize svg/css support for no tenant
-- inline loader add resolve with all possible image extensions to loader load ie svg with jpg
-- add warning if the ratio of the svg blueprint does not match the overloaded file viewbox ratio
-- allow splitting into two process: 
-  1. only do the js => write classNames to on big file
-  2. only do the assets => imports asset file
+go to one of the addresses added to host file with appropriate PORT (default is 8080 for csr and 8114 for ssr).

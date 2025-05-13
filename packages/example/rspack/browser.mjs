@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { createRequire } from 'node:module';
 import {HtmlRspackPlugin} from '@rspack/core';
 import ReactRefreshPlugin from '@rspack/plugin-react-refresh';
-import MultiTenantsPlugin from 'multi-tenants';
+import MultiTenantsPlugin from 'multi-tenant-plugin';
 import getTenantOptions from './getTenantOptions.mjs';
 
 const {  resolve } = createRequire(import.meta.url);

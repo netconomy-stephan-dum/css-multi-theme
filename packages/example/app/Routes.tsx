@@ -1,5 +1,5 @@
 import React from 'react';
-import loadable from 'multi-tenants/loadable';
+import loadable from 'multi-tenant-plugin/loadable';
 import { Route, Switch } from 'react-router';
 
 const Home = loadable(() => import(/* webpackChunkName: "Home" */ './pages/Home'));

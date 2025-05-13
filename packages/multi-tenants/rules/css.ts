@@ -8,8 +8,8 @@ import createPostCSSOptions from '../utils/createPostCSSOptions';
  * only keep css module interface
  * emit separate scss file for each tenant
  */
-const getTenantEmitter = (options: TenantOptions, use: UseOption) => ({
-  issuerLayer: 'root',
+const getTenantEmitter = (options: TenantOptions, use: UseOption, issuerLayer: string) => ({
+  issuerLayer,
   layer: 'collect-css',
   test: /\.s?css$/,
   type: 'javascript/auto',
@@ -115,8 +115,8 @@ const getAssetPipelines = (options: TenantOptions) => [
   },
 ];
 
-const getCSSRules = (options: TenantOptions, use: UseOption) => [
-  getTenantEmitter(options, use),
+const getCSSRules = (options: TenantOptions, use: UseOption, issuerLayer: string) => [
+  getTenantEmitter(options, use, issuerLayer),
   getStylePipeline(options, use),
   ...getAssetPipelines(options),
 ];

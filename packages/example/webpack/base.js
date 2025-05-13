@@ -35,7 +35,7 @@ const getBaseConfig = async (env, options) => {
                     {
                       signatures: [
                         {
-                          from: 'multi-tenants/loadable',
+                          from: 'multi-tenant-plugin/loadable',
                           name: 'default',
                         },
                       ],
@@ -61,11 +61,11 @@ const getBaseConfig = async (env, options) => {
       ],
     },
     plugins: [
+      isDevelopment && new ReactRefreshWebpackPlugin(),
       new webpack.DefinePlugin({
         ROOT_MODULE_PATH: JSON.stringify(join(process.cwd(), packageJson.main)),
-      }),
+      }).filter(Boolean),
     ],
-    // plugins: [isDevelopment && new ReactRefreshWebpackPlugin()].filter(Boolean),
     resolve: {
       extensions: ['.ts', '.tsx', '...'],
     },

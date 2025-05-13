@@ -3,7 +3,7 @@ import commonRSPackConfig from './common.mjs';
 import nodeExternals from 'webpack-node-externals';
 import { createRequire } from 'node:module';
 import getTenantOptions from '@example/webpack/getTenantOptions.js';
-import MultiTenantsPlugin from 'multi-tenants';
+import MultiTenantsPlugin from 'multi-tenant-plugin';
 
 const multiTenantPlugin = new MultiTenantsPlugin.default(getTenantOptions(true));
 

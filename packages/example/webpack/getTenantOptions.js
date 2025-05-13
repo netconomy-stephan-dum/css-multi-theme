@@ -5,7 +5,7 @@ const getTenantOptions = (server = false) => ({
   assetDir: 'assets',
   maxInlineSize: 1024 * 3,
   server,
-  tenants: ['base', 'dark', 'light'],
+  tenants: ['dark', 'light'],
 });
 
 module.exports = getTenantOptions;
